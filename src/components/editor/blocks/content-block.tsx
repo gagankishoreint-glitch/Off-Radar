@@ -93,30 +93,119 @@ export function ContentBlock({ block, documentId }: ContentBlockProps) {
     if (block.type === 'comparison-card') {
         try {
             const data = JSON.parse(block.content);
+            const metrics = data.metrics || [];
+
+            // Calculate winner for salary
+            const salaryMetric = metrics.find((m: any) => m.label === 'CTC');
+            const parseValue = (val: string) => parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
+            const aWins = salaryMetric ? parseValue(salaryMetric.valueA) > parseValue(salaryMetric.valueB) : false;
+
             return (
-                <div className="my-6 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                    {/* Header */}
-                    <div className="grid grid-cols-3 bg-muted p-4 text-sm font-medium text-muted-foreground border-b border-border">
-                        <div className="col-span-1">Metric</div>
-                        <div className="col-span-1 text-center font-bold text-foreground">{data.companyA || 'Company A'}</div>
-                        <div className="col-span-1 text-center font-bold text-foreground">{data.companyB || 'Company B'}</div>
-                    </div>
-                    {/* Rows */}
-                    <div className="divide-y divide-border">
-                        {data.metrics?.map((metric: any, i: number) => (
-                            <div key={i} className={cn("grid grid-cols-3 p-4 items-center text-sm", metric.highlight && "bg-green-50 dark:bg-green-900/10")}>
-                                <div className="col-span-1 font-medium text-muted-foreground flex items-center gap-2">
-                                    {metric.label === 'Monthly In-Hand' && <DollarSign className="w-4 h-4 text-green-600" />}
-                                    {metric.label}
+                <div className="my-8 space-y-6">
+                    {/* Hero Comparison Header */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {/* Company A Card */}
+                        <div className={cn(
+                            "relative p-6 rounded-2xl border-2 transition-all",
+                            aWins ? "border-green-500 bg-green-50 dark:bg-green-950/20" : "border-border bg-card"
+                        )}>
+                            {aWins && (
+                                <div className="absolute -top-3 left-6">
+                                    <span className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                                        <ArrowRight className="w-3 h-3 rotate-[-45deg]" />
+                                        HIGHER PAY
+                                    </span>
                                 </div>
-                                <div className={cn("col-span-1 text-center font-mono", metric.highlight && "text-green-700 dark:text-green-400 font-bold")}>
-                                    {metric.valueA}
+                            )}
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                                    <span className="text-2xl font-bold text-blue-600">
+                                        {data.companyA?.charAt(0) || 'A'}
+                                    </span>
                                 </div>
-                                <div className={cn("col-span-1 text-center font-mono", metric.highlight && "text-green-700 dark:text-green-400 font-bold")}>
-                                    {metric.valueB}
+                                <div>
+                                    <h3 className="text-xl font-bold text-foreground">{data.companyA || 'Company A'}</h3>
+                                    <p className="text-xs text-muted-foreground">Offer Package</p>
                                 </div>
                             </div>
-                        ))}
+
+                            {/* Metrics for A */}
+                            <div className="space-y-3">
+                                {metrics.map((metric: any, i: number) => (
+                                    <div key={`a-${i}`} className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">{metric.label}</span>
+                                        <span className={cn(
+                                            "font-bold font-mono text-base",
+                                            metric.highlight && "text-green-600 dark:text-green-400"
+                                        )}>
+                                            {metric.valueA}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Company B Card */}
+                        <div className={cn(
+                            "relative p-6 rounded-2xl border-2 transition-all",
+                            !aWins ? "border-green-500 bg-green-50 dark:bg-green-950/20" : "border-border bg-card"
+                        )}>
+                            {!aWins && (
+                                <div className="absolute -top-3 left-6">
+                                    <span className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                                        <ArrowRight className="w-3 h-3 rotate-[-45deg]" />
+                                        HIGHER PAY
+                                    </span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                                    <span className="text-2xl font-bold text-orange-600">
+                                        {data.companyB?.charAt(0) || 'B'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-foreground">{data.companyB || 'Company B'}</h3>
+                                    <p className="text-xs text-muted-foreground">Offer Package</p>
+                                </div>
+                            </div>
+
+                            {/* Metrics for B */}
+                            <div className="space-y-3">
+                                {metrics.map((metric: any, i: number) => (
+                                    <div key={`b-${i}`} className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">{metric.label}</span>
+                                        <span className={cn(
+                                            "font-bold font-mono text-base",
+                                            metric.highlight && "text-green-600 dark:text-green-400"
+                                        )}>
+                                            {metric.valueB}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Visual Comparison Bar */}
+                    <div className="bg-muted rounded-xl p-4">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                            <span className="font-medium text-muted-foreground">Salary Comparison</span>
+                        </div>
+                        <div className="relative h-8 bg-background rounded-lg overflow-hidden">
+                            <div
+                                className="absolute left-0 top-0 h-full bg-blue-500 transition-all flex items-center justify-end pr-2"
+                                style={{ width: aWins ? '60%' : '40%' }}
+                            >
+                                <span className="text-xs font-bold text-white">{data.companyA}</span>
+                            </div>
+                            <div
+                                className="absolute right-0 top-0 h-full bg-orange-500 transition-all flex items-center justify-start pl-2"
+                                style={{ width: !aWins ? '60%' : '40%' }}
+                            >
+                                <span className="text-xs font-bold text-white">{data.companyB}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );

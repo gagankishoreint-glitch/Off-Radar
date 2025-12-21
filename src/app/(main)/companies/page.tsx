@@ -298,9 +298,9 @@ function CompanyCard({
 }) {
     return (
         <Link href={`/companies/${company.id}`} className="block">
-            <div className="bg-card border border-border rounded-lg p-4 hover:border-foreground/20 hover:shadow-md transition-all cursor-pointer">
+            <div className="bg-card border border-border rounded-lg p-5 hover:border-foreground/20 hover:shadow-md transition-all cursor-pointer">
                 {/* Compact Header */}
-                <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-lg font-bold text-foreground truncate">{company.name}</h3>

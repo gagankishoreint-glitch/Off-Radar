@@ -48,15 +48,49 @@ export function generateRealityPage(offerA: Offer, offerB: Offer): Block[] {
     const inHandA = (offerA.ctc * 0.7 / 12).toFixed(0); // Rough estimate
     const inHandB = (offerB.ctc * 0.8 / 12).toFixed(0);
 
+    // Fetch company data for enhanced metrics
+    const companyDataA = COMPANIES.find(c => c.name.toLowerCase() === offerA.company.toLowerCase() || c.id === offerA.company.toLowerCase());
+    const companyDataB = COMPANIES.find(c => c.name.toLowerCase() === offerB.company.toLowerCase() || c.id === offerB.company.toLowerCase());
+
+    // Build enhanced metrics array
+    const metrics = [
+        { label: 'CTC', valueA: `₹${ctcA}L`, valueB: `₹${ctcB}L` },
+        { label: 'Base Component', valueA: '~70%', valueB: '~80%' },
+        { label: 'Monthly In-Hand', valueA: `₹${inHandA}k`, valueB: `₹${inHandB}k`, highlight: true }
+    ];
+
+    // Add WLB if available
+    if (companyDataA || companyDataB) {
+        metrics.push({
+            label: 'Work-Life Balance',
+            valueA: companyDataA?.culture.wlb || 'Unknown',
+            valueB: companyDataB?.culture.wlb || 'Unknown'
+        });
+    }
+
+    // Add learning curve if available
+    if (companyDataA || companyDataB) {
+        metrics.push({
+            label: 'Learning Curve',
+            valueA: companyDataA?.culture.learning || 'Unknown',
+            valueB: companyDataB?.culture.learning || 'Unknown'
+        });
+    }
+
+    // Add company type
+    if (companyDataA || companyDataB) {
+        metrics.push({
+            label: 'Company Type',
+            valueA: companyDataA?.companyType || 'Unknown',
+            valueB: companyDataB?.companyType || 'Unknown'
+        });
+    }
+
     // Pass structured data for the comparison card
     const comparisonData = JSON.stringify({
         companyA: offerA.company,
         companyB: offerB.company,
-        metrics: [
-            { label: 'CTC', valueA: `₹${ctcA} LPA`, valueB: `₹${ctcB} LPA` },
-            { label: 'Base Component', valueA: '~70%', valueB: '~80%' },
-            { label: 'Monthly In-Hand', valueA: `~₹${inHandA}k`, valueB: `~₹${inHandB}k`, highlight: true }
-        ]
+        metrics
     });
 
     add('comparison-card', comparisonData);
