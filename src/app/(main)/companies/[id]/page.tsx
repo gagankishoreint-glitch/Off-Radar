@@ -213,8 +213,6 @@ export default function CompanyDetailPage() {
                     </div>
                 )}
 
-                )}
-
                 {/* Deep Dive Analysis (New Section) */}
                 {company.detailedAnalysis && (
                     <div className="mb-12">
