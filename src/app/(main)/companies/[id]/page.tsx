@@ -217,7 +217,7 @@ export default function CompanyDetailPage() {
                 {company.internship && (
                     <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/10 border border-indigo-100 dark:border-indigo-800 rounded-xl p-6 mb-8">
                         <h3 className="text-lg font-semibold text-indigo-700 dark:text-indigo-400 mb-4 flex items-center gap-2">
-                            Briefcase className="w-5 h-5" /
+                            <Briefcase className="w-5 h-5" />
                             Internship Opportunities
                         </h3>
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
