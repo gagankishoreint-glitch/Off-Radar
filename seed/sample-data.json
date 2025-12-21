@@ -1,0 +1,87 @@
+{
+    "workspaces": [
+        {
+            "id": "ws-1",
+            "name": "My Workspace",
+            "pages": [
+                "page-1",
+                "page-2",
+                "page-3"
+            ]
+        }
+    ],
+    "pages": [
+        {
+            "id": "page-1",
+            "title": "Welcome to My Notebook",
+            "blocks": [
+                {
+                    "id": "b1",
+                    "type": "paragraph",
+                    "content": "Welcome to your new workspace. It matches the flexibility of Notion."
+                },
+                {
+                    "id": "b2",
+                    "type": "todo",
+                    "content": "Try dragging this block",
+                    "properties": {
+                        "checked": false
+                    }
+                },
+                {
+                    "id": "b3",
+                    "type": "image",
+                    "content": "",
+                    "properties": {
+                        "url": "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "page-2",
+            "title": "Project: Offer Debater",
+            "blocks": [
+                {
+                    "id": "b1",
+                    "type": "heading-2",
+                    "content": "Overview"
+                },
+                {
+                    "id": "b2",
+                    "type": "paragraph",
+                    "content": "A tool to help engineers negotiate better offers."
+                },
+                {
+                    "id": "b3",
+                    "type": "code",
+                    "content": "const offer = calculateEquity(stockOptions);",
+                    "properties": {
+                        "language": "javascript"
+                    }
+                },
+                {
+                    "id": "b4",
+                    "type": "heading-3",
+                    "content": "Tasks"
+                },
+                {
+                    "id": "b5",
+                    "type": "todo",
+                    "content": "Design DB Schema",
+                    "properties": {
+                        "checked": true
+                    }
+                },
+                {
+                    "id": "b6",
+                    "type": "todo",
+                    "content": "MVP Launch",
+                    "properties": {
+                        "checked": false
+                    }
+                }
+            ]
+        }
+    ]
+}
