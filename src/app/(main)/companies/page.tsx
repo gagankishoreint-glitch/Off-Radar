@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { COMPANIES, Company, Major, Tier, ALL_DOMAINS, ALL_ROLE_TYPES, TIER_TOOLTIPS } from '@/lib/company-data';
+import { COMPANIES, Company, Major, ALL_DOMAINS, ALL_ROLE_TYPES } from '@/lib/company-data';
 import { useUserStore } from '@/store/use-user-store';
 import { ChevronDown, ChevronUp, Bookmark, Star, MapPin, Building2, GraduationCap, Briefcase, Filter, X, Users, TrendingUp, Clock } from 'lucide-react';
 import Link from 'next/link';
@@ -14,7 +14,6 @@ export default function CompaniesPage() {
     const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
     // Advanced filters
-    const [tierFilter, setTierFilter] = useState<string>('All');
     const [locationFilter, setLocationFilter] = useState<string>('All');
     const [companyTypeFilter, setCompanyTypeFilter] = useState<string>('All');
     const [difficultyFilter, setDifficultyFilter] = useState<string>('All');
@@ -27,23 +26,21 @@ export default function CompaniesPage() {
     const filtered = COMPANIES.filter(c => {
         const matchesMajor = majorFilter === 'All' || c.majors.includes(majorFilter);
         const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
-        const matchesTier = tierFilter === 'All' || c.tier === tierFilter;
         const matchesLocation = locationFilter === 'All' || c.location === locationFilter;
         const matchesCompanyType = companyTypeFilter === 'All' || c.companyType === companyTypeFilter;
         const matchesDifficulty = difficultyFilter === 'All' || c.difficulty === difficultyFilter;
         const matchesDomain = domainFilter === 'All' || c.domains.includes(domainFilter);
         const matchesInternFriendly = internFriendlyFilter === null || c.internFriendly === internFriendlyFilter;
 
-        return matchesMajor && matchesSearch && matchesTier && matchesLocation &&
+        return matchesMajor && matchesSearch && matchesLocation &&
             matchesCompanyType && matchesDifficulty && matchesDomain && matchesInternFriendly;
     });
 
-    const hasActiveFilters = tierFilter !== 'All' || locationFilter !== 'All' ||
+    const hasActiveFilters = locationFilter !== 'All' ||
         companyTypeFilter !== 'All' || difficultyFilter !== 'All' ||
         domainFilter !== 'All' || internFriendlyFilter !== null;
 
     const clearAllFilters = () => {
-        setTierFilter('All');
         setLocationFilter('All');
         setCompanyTypeFilter('All');
         setDifficultyFilter('All');
@@ -78,14 +75,6 @@ export default function CompaniesPage() {
         }
     };
 
-    // Tier styling
-    const getTierStyle = (tier: Tier) => {
-        switch (tier) {
-            case 'Tier 1': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
-            case 'Tier 2': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
-            case 'Tier 3': return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
-        }
-    };
 
     // Difficulty styling
     const getDifficultyStyle = (difficulty: string) => {
@@ -149,20 +138,6 @@ export default function CompaniesPage() {
                     {showAdvanced && (
                         <div className="mt-4 p-5 bg-muted/50 rounded-xl border border-border">
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                {/* Tier */}
-                                <div>
-                                    <label className="text-xs text-muted-foreground mb-1 block">Tier</label>
-                                    <select
-                                        value={tierFilter}
-                                        onChange={e => setTierFilter(e.target.value)}
-                                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
-                                    >
-                                        <option value="All">All Tiers</option>
-                                        <option value="Tier 1">Tier 1</option>
-                                        <option value="Tier 2">Tier 2</option>
-                                        <option value="Tier 3">Tier 3</option>
-                                    </select>
-                                </div>
 
                                 {/* Location */}
                                 <div>
@@ -273,7 +248,6 @@ export default function CompaniesPage() {
                                 company={company}
                                 isExpanded={expandedCards.has(company.id)}
                                 onToggle={() => toggleCardExpand(company.id)}
-                                getTierStyle={getTierStyle}
                                 getWLBStyle={getWLBStyle}
                                 getDifficultyStyle={getDifficultyStyle}
                             />
@@ -290,14 +264,12 @@ function CompanyCard({
     company,
     isExpanded,
     onToggle,
-    getTierStyle,
     getWLBStyle,
     getDifficultyStyle
 }: {
     company: Company;
     isExpanded: boolean;
     onToggle: () => void;
-    getTierStyle: (tier: Tier) => string;
     getWLBStyle: (wlb: string) => string;
     getDifficultyStyle: (d: string) => string;
 }) {
@@ -308,12 +280,6 @@ function CompanyCard({
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-xl font-bold text-foreground">{company.name}</h3>
-                        <span
-                            className={`px-2 py-0.5 text-xs font-medium rounded-full ${getTierStyle(company.tier)}`}
-                            title={TIER_TOOLTIPS[company.tier]}
-                        >
-                            {company.tier}
-                        </span>
                         {company.internFriendly && (
                             <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                                 Intern Friendly
