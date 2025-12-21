@@ -1,47 +1,68 @@
-# Webild Clone (Notion-style App)
+# Off-Radar 🌌
+A clean, block-based workspace with real-world career context for students.
 
-A high-performance, block-based workspace application built with Next.js 14, Tailwind CSS, and Zustand.
+Live: https://off-radar.vercel.app/
+
+---
+
+## 🚨 Problem Statement — The Hidden Cost of Career Decisions
+
+Every year, students accept internships and job offers based on CTC numbers, brand names, or peer pressure — without reliable insight into what those roles actually involve in day-to-day reality.
+
+Most existing platforms focus on:
+- Job listings
+- HR-approved role descriptions
+- Surface-level salary numbers
+
+They fail to answer what students actually care about:
+- What will my real in-hand salary be?
+- Will I be overworked or burned out?
+- Is the internship meaningful work or just busywork?
+- What downsides aren’t mentioned during hiring?
+- Which offer truly fits my priorities — learning, money, or balance?
+
+As a result, students often:
+- Accept mismatched offers
+- Experience early burnout
+- Regret decisions within months
+- Make choices based on incomplete or misleading information
+
+There is no unified system that helps students compare opportunities using **reality, risk, and long-term impact**.
+
+
 
 ## ✨ Features
-- **Block Editor**: Heading, Lists, Tasks, Code blocks.
-- **Slash Commands**: Type `/` to insert blocks.
-- **Drag & Drop**: Reorder blocks intuitively.
-- **Dark Mode**: Polished UI for all lighting conditions.
-- **Offline First**: Works without a backend (demo mode).
 
-## 🚀 Getting Started
+- **Block-based Editor**  
+  Text, headings, lists, tasks, and code blocks
 
-### Prerequisites
-- Node.js 18+
-- npm or pnpm
+- **Slash Commands**  
+  Insert blocks quickly using `/`
 
-### Installation
+- **Drag & Drop**  
+  Reorder blocks intuitively
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/webild-clone.git
-   cd webild-clone
-   ```
+- **Dark Mode UI**  
+  Clean, low-contrast visuals for long sessions
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+- **Offline Demo Mode**  
+  Works without authentication or backend
 
-3. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-## 🛠 Deployment (Vercel + Supabase)
 
-1. **Push to GitHub**.
-2. **Import to Vercel**.
-3. **Set Environment Variables**:
-   - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anon Key
-4. **Deploy**!
+## 🛠 Tech Stack
 
-## 🤝 Architecture
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details on the data model and block engine.
+- **Next.js 14 (App Router)**
+- **Tailwind CSS**
+- **Zustand**
+- **Vercel**
+
+
+
+##  Local Development
+
+```bash
+git clone https://github.com/your-username/off-radar.git
+cd off-radar
+npm install
+npm run dev
