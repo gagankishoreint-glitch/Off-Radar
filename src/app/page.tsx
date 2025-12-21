@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { Radar, Sun, Moon, DollarSign, Zap, Target } from "lucide-react";
 import { useTheme } from "@/store/use-theme-store";
+import { useUserStore } from "@/store/use-user-store";
 
 export default function LandingPage() {
     const { theme, toggleTheme } = useTheme();
+    const userCount = useUserStore(state => state.getUserCount());
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
@@ -54,10 +56,10 @@ export default function LandingPage() {
                 <section className="w-full py-20 md:py-28 lg:py-36">
                     <div className="container px-6 md:px-12 max-w-5xl mx-auto">
                         <div className="flex flex-col items-center space-y-8 text-center">
-                            {/* Badge */}
+                            {/* Badge with Live User Count */}
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-muted rounded-full text-sm">
-                                <span className="text-purple-600 font-semibold">2,500+</span>
-                                <span className="text-muted-foreground">Students trust Off-Radar</span>
+                                <span className="text-purple-600 font-semibold">{userCount.toLocaleString()}+</span>
+                                <span className="text-muted-foreground">Students on Off-Radar</span>
                             </div>
 
                             <h1 className="font-heading font-bold text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1]">

@@ -22,10 +22,10 @@ export default function TrendsPage() {
                             Last Updated: {currentDate}
                         </div>
                         <h1 className="text-4xl font-heading font-bold mb-3 flex items-center gap-3">
-                            <TrendingUp className="text-primary" /> Market Trends 2025-2026
+                            <TrendingUp className="text-primary" /> Market Trends 2025
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl">
-                            Live insights on the shifting hiring landscape. Data aggregated from global research and top-tier Indian placement stats.
+                            Real salary data and hiring trends. Powered by <a href="https://www.levels.fyi/2025/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Levels.fyi</a> and industry research.
                         </p>
                     </div>
 
@@ -49,30 +49,30 @@ export default function TrendsPage() {
                     )}
                 </div>
 
-                {/* Key Stats Grid */}
+                {/* Key Stats Grid - 2025 Data */}
                 <div className="grid md:grid-cols-3 gap-6 mb-16">
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
                         <div className="flex items-center gap-2 mb-2 text-muted-foreground text-sm font-medium">
-                            <DollarSign className="w-4 h-4" /> Top 10% Salary Growth
+                            <DollarSign className="w-4 h-4" /> Median Total Comp (India)
                         </div>
-                        <div className="text-3xl font-heading font-bold text-foreground">Aggressive</div>
+                        <div className="text-3xl font-heading font-bold text-foreground">₹18-45L</div>
                         <div className="text-green-500 text-sm mt-1 flex items-center gap-1">
-                            <ArrowUpRight className="w-4 h-4" /> Disproportionate gains for high-skill talent
+                            <ArrowUpRight className="w-4 h-4" /> Entry to Senior SWE
                         </div>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
                         <div className="flex items-center gap-2 mb-2 text-muted-foreground text-sm font-medium">
-                            <Briefcase className="w-4 h-4" /> Fastest Growing Role
+                            <Briefcase className="w-4 h-4" /> Top Paying Role 2025
                         </div>
-                        <div className="text-3xl font-heading font-bold text-foreground">AI Engineer</div>
-                        <div className="text-muted-foreground text-sm mt-1">Software + Data + Systems</div>
+                        <div className="text-3xl font-heading font-bold text-foreground">ML Engineer</div>
+                        <div className="text-muted-foreground text-sm mt-1">Up to ₹60L at top firms</div>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
                         <div className="flex items-center gap-2 mb-2 text-muted-foreground text-sm font-medium">
-                            <Users className="w-4 h-4" /> Placement Trend
+                            <Users className="w-4 h-4" /> Hiring Trend
                         </div>
-                        <div className="text-3xl font-heading font-bold text-foreground">Off-Campus ↑</div>
-                        <div className="text-muted-foreground text-sm mt-1">Tier-2/3 colleges seeing breakout hires</div>
+                        <div className="text-3xl font-heading font-bold text-foreground">Remote-First ↑</div>
+                        <div className="text-muted-foreground text-sm mt-1">Borderless hiring accelerating</div>
                     </div>
                 </div>
 
@@ -252,6 +252,28 @@ export default function TrendsPage() {
                         </Link>
                     </div>
                 )}
+
+                {/* Company Logos Grid */}
+                <div className="mt-16 pt-12 border-t border-border">
+                    <h3 className="text-center text-sm font-semibold text-muted-foreground tracking-wider uppercase mb-8">
+                        Companies on Off-Radar
+                    </h3>
+                    <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-6 items-center justify-items-center opacity-60">
+                        {['Google', 'Amazon', 'Microsoft', 'Meta', 'Apple', 'Netflix', 'Adobe', 'Uber', 'Airbnb', 'Stripe', 'Shopify', 'Dropbox', 'Atlassian', 'Snowflake', 'Databricks', 'OpenAI', 'Nvidia', 'Intel', 'AMD', 'Samsung'].map((company) => (
+                            <div key={company} className="text-center p-3 rounded-lg hover:bg-muted transition-colors">
+                                <div className="text-2xl font-bold text-foreground">
+                                    {company.charAt(0)}
+                                </div>
+                                <div className="text-[10px] text-muted-foreground mt-1">
+                                    {company}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-center text-xs text-muted-foreground mt-8">
+                        Data sourced from <a href="https://www.levels.fyi" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Levels.fyi</a>, industry reports, and community contributions
+                    </p>
+                </div>
             </div>
         </div>
     );

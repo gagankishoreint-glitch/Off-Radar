@@ -257,8 +257,8 @@ export default function CompaniesPage() {
                     Showing {filtered.length} companies
                 </p>
 
-                {/* Company Cards */}
-                <div className="grid gap-4">
+                {/* Company Cards - 3 Column Grid */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.length === 0 ? (
                         <div className="text-center py-16 text-muted-foreground">
                             <p className="text-lg mb-2">No companies found matching your criteria.</p>
@@ -282,7 +282,7 @@ export default function CompaniesPage() {
     );
 }
 
-// Company Card Component
+// Company Card Component - Compact Design
 function CompanyCard({
     company,
     isExpanded,
@@ -298,98 +298,86 @@ function CompanyCard({
 }) {
     return (
         <Link href={`/companies/${company.id}`} className="block">
-            <div className="bg-card border border-border rounded-xl p-6 hover:border-foreground/20 transition-colors cursor-pointer">
-                {/* Header Row */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-xl font-bold text-foreground">{company.name}</h3>
+            <div className="bg-card border border-border rounded-lg p-4 hover:border-foreground/20 hover:shadow-md transition-all cursor-pointer">
+                {/* Compact Header */}
+                <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-bold text-foreground truncate">{company.name}</h3>
                             {company.internFriendly && (
-                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                    Intern Friendly
+                                <span className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 shrink-0">
+                                    Intern
                                 </span>
                             )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{company.description}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{company.description}</p>
                     </div>
 
-                    {/* Salary */}
+                    {/* Compact Salary */}
                     <div className="text-right shrink-0">
-                        <div className="text-lg font-bold text-foreground">
-                            ₹{company.salary.minLPA} - {company.salary.maxLPA} LPA
+                        <div className="text-base font-bold text-foreground whitespace-nowrap">
+                            ₹{company.salary.minLPA}-{company.salary.maxLPA}L
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-[10px] text-muted-foreground">
                             ~{company.salary.inHandPercent}% in-hand
                         </div>
                     </div>
                 </div>
 
-                {/* Info Row */}
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
+                {/* Compact Info Row */}
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
                     <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
+                        <MapPin className="w-3 h-3" />
                         {company.location}
                     </span>
                     <span className="flex items-center gap-1">
-                        <Building2 className="w-4 h-4" />
+                        <Building2 className="w-3 h-3" />
                         {company.companyType}
                     </span>
                     <span className={`flex items-center gap-1 ${getDifficultyStyle(company.difficulty)}`}>
-                        <TrendingUp className="w-4 h-4" />
+                        <TrendingUp className="w-3 h-3" />
                         {company.difficulty}
                     </span>
-                    <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${getWLBStyle(company.culture.wlb)}`}>
+                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] ${getWLBStyle(company.culture.wlb)}`}>
                         <Clock className="w-3 h-3" />
-                        WLB: {company.culture.wlb}
+                        {company.culture.wlb}
                     </span>
                 </div>
 
-                {/* Tags Row */}
-                <div className="flex flex-wrap gap-2 mb-4">
+                {/* Compact Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-2">
                     {company.majors.map(m => (
-                        <span key={m} className="px-2 py-1 text-xs bg-muted rounded-lg text-foreground font-medium">
+                        <span key={m} className="px-1.5 py-0.5 text-[10px] bg-muted rounded text-foreground font-medium">
                             {m}
                         </span>
                     ))}
-                    {company.domains.slice(0, 3).map(d => (
-                        <span key={d} className="px-2 py-1 text-xs bg-muted/50 rounded-lg text-muted-foreground">
+                    {company.domains.slice(0, 2).map(d => (
+                        <span key={d} className="px-1.5 py-0.5 text-[10px] bg-muted/50 rounded text-muted-foreground">
                             {d}
                         </span>
                     ))}
                 </div>
 
-                {/* Expand/Collapse Button */}
+                {/* Expand Button */}
                 <button
-                    onClick={onToggle}
-                    className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    onClick={(e) => { e.preventDefault(); onToggle(); }}
+                    className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                 >
-                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    {isExpanded ? 'Show less' : 'Why this company?'}
+                    {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    {isExpanded ? 'Less' : 'Why join?'}
                 </button>
 
                 {/* Expanded Content */}
                 {isExpanded && company.whyJoin && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                        <h4 className="text-sm font-medium text-foreground mb-2">Why Join?</h4>
-                        <ul className="grid md:grid-cols-2 gap-2">
+                    <div className="mt-3 pt-3 border-t border-border">
+                        <ul className="grid md:grid-cols-2 gap-1.5">
                             {company.whyJoin.map((reason, i) => (
-                                <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <span className="text-green-500 mt-0.5">•</span>
+                                <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                                    <span className="text-green-500 mt-0.5 text-[10px]">•</span>
                                     {reason}
                                 </li>
                             ))}
                         </ul>
-
-                        <div className="mt-4 grid md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span className="text-muted-foreground">Role Types: </span>
-                                <span className="text-foreground">{company.roleTypes.join(', ')}</span>
-                            </div>
-                            <div>
-                                <span className="text-muted-foreground">Learning: </span>
-                                <span className="text-foreground">{company.culture.learning}</span>
-                            </div>
-                        </div>
                     </div>
                 )}
             </div>

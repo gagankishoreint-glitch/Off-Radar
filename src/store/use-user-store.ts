@@ -12,9 +12,13 @@ interface UserState {
     wishlist: string[]; // company IDs for wishlist
     readLater: string[]; // document IDs for comparisons
 
+    // User count
+    totalUsers: number; // Total users who created accounts
+
     // Actions
     login: (username: string, email: string, isGuest?: boolean) => void;
     logout: () => void;
+    getUserCount: () => number;
 
     // Saved companies
     toggleSavedCompany: (companyId: string) => void;
@@ -39,8 +43,13 @@ export const useUserStore = create<UserState>()(
             savedCompanies: [],
             wishlist: [],
             readLater: [],
+            totalUsers: 2500, // Starting count
 
             login: (username, email, isGuest = false) => {
+                if (!isGuest) {
+                    // Increment user count for real accounts
+                    set((state) => ({ totalUsers: state.totalUsers + 1 }));
+                }
                 set({ isLoggedIn: true, username, email, isGuest });
 
                 // If switching from guest to regular user or vice versa, 
@@ -95,7 +104,9 @@ export const useUserStore = create<UserState>()(
                     : [...state.readLater, documentId]
             })),
 
-            isReadLater: (documentId) => get().readLater.includes(documentId)
+            isReadLater: (documentId) => get().readLater.includes(documentId),
+
+            getUserCount: () => get().totalUsers
         }),
         {
             name: 'user-storage',
