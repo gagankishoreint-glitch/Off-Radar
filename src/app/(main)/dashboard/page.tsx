@@ -13,13 +13,15 @@ export default function DashboardPage() {
     const { isLoggedIn, username, logout, savedCompanies, wishlist, readLater, isGuest } = useUserStore();
     const documents = useDocumentStore((state) => state.documents);
 
+    // Only redirect to login if user is not logged in AND not a guest
     useEffect(() => {
-        if (!isLoggedIn) {
+        if (!isLoggedIn && !isGuest) {
             router.push('/login');
         }
-    }, [isLoggedIn, router]);
+    }, [isLoggedIn, isGuest, router]);
 
-    if (!isLoggedIn) {
+    // Show loading only for non-guest, non-logged-in users
+    if (!isLoggedIn && !isGuest) {
         return <div className="p-8 text-center text-muted-foreground">Redirecting to login...</div>;
     }
 
