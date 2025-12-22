@@ -5,14 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUserStore } from "@/store/use-user-store";
 import { useTheme } from "@/store/use-theme-store";
-import { Radar, Sun, Moon, LogOut, User, Menu, X } from "lucide-react";
+import { Radar, Sun, Moon, LogOut, User, Menu, X, Coins } from "lucide-react";
 import { useState } from "react";
+import { useCurrencyStore } from "@/store/use-currency-store";
+import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 
 export function HorizontalNav() {
     const pathname = usePathname();
     const router = useRouter();
     const { isLoggedIn, username, logout } = useUserStore();
     const { theme, toggleTheme } = useTheme();
+    const { currency, setCurrency } = useCurrencyStore();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const handleLogout = () => {
@@ -59,6 +62,23 @@ export function HorizontalNav() {
 
                     {/* Right Side Actions */}
                     <div className="hidden md:flex items-center gap-3">
+                        {/* Currency Selector */}
+                        <div className="relative flex items-center">
+                            <Coins className="w-4 h-4 absolute left-2.5 text-muted-foreground pointer-events-none" />
+                            <select
+                                value={currency}
+                                onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                                className="h-9 pl-8 pr-3 rounded-md bg-background border border-border text-xs font-medium focus:outline-none focus:ring-2 focus:ring-ring appearance-none cursor-pointer hover:bg-muted/50 transition-colors"
+                                aria-label="Select Currency"
+                            >
+                                {Object.entries(CURRENCIES).map(([code, { label }]: any) => (
+                                    <option key={code} value={code}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         {/* Theme Toggle */}
                         <button
                             onClick={toggleTheme}

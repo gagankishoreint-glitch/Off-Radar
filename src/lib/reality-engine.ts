@@ -2,8 +2,9 @@ import { nanoid } from 'nanoid';
 import { Offer, RealityInsight, OfferPriorities } from '@/types/off-radar';
 import { Block } from '@/types/editor';
 import { COMPANIES, Company } from '@/lib/company-data';
+import { CurrencyCode, convertSalary, getConvertedValue, formatValue } from '@/lib/currency';
 
-export function generateRealityPage(offerA: Offer, offerB: Offer, priorities: OfferPriorities): Block[] {
+export function generateRealityPage(offerA: Offer, offerB: Offer, priorities: OfferPriorities, currency: CurrencyCode = 'INR'): Block[] {
     const blocks: Block[] = [];
 
     const add = (type: any, content: string, props?: any) => {
@@ -23,8 +24,8 @@ export function generateRealityPage(offerA: Offer, offerB: Offer, priorities: Of
     const companyA = getCompany(offerA.company);
     const companyB = getCompany(offerB.company);
 
-    const ctcA = offerA.ctc;
-    const ctcB = offerB.ctc;
+    const ctcA = offerA.ctc || 0;
+    const ctcB = offerB.ctc || 0;
 
     // --- 1. TL;DR (Adaptive) ---
     // Calculate simple heuristic score based on priorities
@@ -58,31 +59,35 @@ export function generateRealityPage(offerA: Offer, offerB: Offer, priorities: Of
         const base = offer.base || ctc * 0.6;
         const bonus = offer.hasBonus ? ctc * 0.15 : 0;
         const esop = offer.hasBonus ? ctc * 0.15 : ctc * 0.05; // Standard 5-15% stock component
-        const pfAndBenefits = ctc * 0.05;
 
-        // Approx In Hand = (Base - Tax) / 12. Very rough Tax calc (30% slab simplified)
+        // Approx In Hand logic used for monthly calc
         const taxableIncome = base + bonus;
         // Conservative tax estimate: 20% effective rate for <20L, 25% for >20L
         const taxRate = taxableIncome > 20 ? 0.25 : 0.20;
-        const monthlyInHand = ((taxableIncome * (1 - taxRate)) / 12).toFixed(1);
+        const monthlyInHandLPA = (taxableIncome * (1 - taxRate)); // Annual In Hand in LPA
 
         return {
-            base: base.toFixed(1),
-            bonus: bonus.toFixed(1),
-            esop: esop.toFixed(1),
-            monthly: monthlyInHand
+            base,
+            bonus,
+            esop,
+            monthlyLPA: monthlyInHandLPA
         };
     };
 
     const financeA = calculateBreakdown(offerA, companyA);
     const financeB = calculateBreakdown(offerB, companyB);
 
+    const getMonthly = (valLPA: number) => {
+        const annual = getConvertedValue(valLPA, currency);
+        return formatValue(annual / 12, currency) + '/mo';
+    };
+
     const metrics = [
-        { label: 'Paper CTC', valueA: `${ctcA} LPA`, valueB: `${ctcB} LPA` },
-        { label: 'Base Pay', valueA: `${financeA.base} LPA`, valueB: `${financeB.base} LPA` },
-        { label: 'Variable/Bonus', valueA: `${financeA.bonus} LPA`, valueB: `${financeB.bonus} LPA` },
-        { label: 'Paper Money (Stocks)', valueA: `${financeA.esop} LPA`, valueB: `${financeB.esop} LPA` },
-        { label: 'Real Monthly In-hand', valueA: `~₹${financeA.monthly}k`, valueB: `~₹${financeB.monthly}k`, highlight: true }
+        { label: 'Paper CTC', valueA: convertSalary(ctcA, currency), valueB: convertSalary(ctcB, currency) },
+        { label: 'Base Pay', valueA: convertSalary(financeA.base, currency), valueB: convertSalary(financeB.base, currency) },
+        { label: 'Variable/Bonus', valueA: convertSalary(financeA.bonus, currency), valueB: convertSalary(financeB.bonus, currency) },
+        { label: 'Paper Money (Stocks)', valueA: convertSalary(financeA.esop, currency), valueB: convertSalary(financeB.esop, currency) },
+        { label: 'Real Monthly In-hand', valueA: getMonthly(financeA.monthlyLPA), valueB: getMonthly(financeB.monthlyLPA), highlight: true }
     ];
 
     const comparisonData = JSON.stringify({
@@ -161,8 +166,8 @@ export function generateRealityPage(offerA: Offer, offerB: Offer, priorities: Of
 
         // "Regrets" Section (Heuristic based on Company Type)
         add('callout', `⚠️ **Common Regret:** "${data.companyType === 'Startup' ?
-                "Fast paced, but sometimes codebase is messy and mentorship is absent." :
-                (data.tier === 'Tier 1' ? "Golden handcuffs. Hard to find similar pay elsewhere easily." : "Slow promotion cycles and legacy tech debt.")
+            "Fast paced, but sometimes codebase is messy and mentorship is absent." :
+            (data.tier === 'Tier 1' ? "Golden handcuffs. Hard to find similar pay elsewhere easily." : "Slow promotion cycles and legacy tech debt.")
             }"`);
     };
 
@@ -181,9 +186,9 @@ export function generateRealityPage(offerA: Offer, offerB: Offer, priorities: Of
 
     const verdictData = JSON.stringify({
         winner,
-        financialDiff: parseFloat(financeA.monthly) > parseFloat(financeB.monthly) ?
-            `${offerA.company} gives ~${((parseFloat(financeA.monthly) - parseFloat(financeB.monthly)) * 100 / parseFloat(financeB.monthly)).toFixed(0)}% more cash in-hand.` :
-            `${offerB.company} gives ~${((parseFloat(financeB.monthly) - parseFloat(financeA.monthly)) * 100 / parseFloat(financeA.monthly)).toFixed(0)}% more cash in-hand.`,
+        financialDiff: financeA.monthlyLPA > financeB.monthlyLPA ?
+            `${offerA.company} gives ~${((financeA.monthlyLPA - financeB.monthlyLPA) * 100 / financeB.monthlyLPA).toFixed(0)}% more cash in-hand.` :
+            `${offerB.company} gives ~${((financeB.monthlyLPA - financeA.monthlyLPA) * 100 / financeA.monthlyLPA).toFixed(0)}% more cash in-hand.`,
         growthWinner: scoreA > scoreB ? `${offerA.company} matches your learning priority better.` : `${offerB.company} matches your learning priority better.`,
         wlbWinner: companyA?.culture.wlb === 'Green' ? `${offerA.company} is the safer bet for WLB.` : `${offerB.company} is likely better for stress-free work.`,
         networkSentiment: `Based on your priorities, ${winner} scores ${Math.abs(scoreA - scoreB).toFixed(1)} points higher in our weighted matrix.`

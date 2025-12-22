@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { COMPANIES, Company, Major, Level, ALL_DOMAINS, ALL_ROLE_TYPES } from '@/lib/company-data';
 import { useUserStore } from '@/store/use-user-store';
+import { useCurrencyStore } from '@/store/use-currency-store';
+import { convertSalary } from '@/lib/currency';
 import { ChevronDown, ChevronUp, Bookmark, Star, MapPin, Building2, GraduationCap, Briefcase, Filter, X, Users, TrendingUp, Clock, Search, Heart, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -303,6 +305,7 @@ function CompanyCard({
 }) {
     // Smart Apply Link Logic
     const applyLink = company.careersUrl || `https://www.google.com/search?q=${encodeURIComponent(company.name + ' careers india')}`;
+    const { currency } = useCurrencyStore();
 
     return (
         <div className="bg-card border border-border rounded-lg p-5 hover:border-foreground/20 hover:shadow-md transition-all">
@@ -334,7 +337,7 @@ function CompanyCard({
                             <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                         </button>
                         <div className="text-base font-bold text-foreground whitespace-nowrap">
-                            ₹{company.salary.minLPA}-{company.salary.maxLPA}L
+                            {convertSalary(company.salary.minLPA, currency)} - {convertSalary(company.salary.maxLPA, currency).replace(currency === 'INR' ? ' LPA' : '/yr', '')}{currency === 'INR' ? 'L' : ''}
                         </div>
                         <div className="text-[10px] text-muted-foreground">
                             ~{company.salary.inHandPercent}% in-hand
@@ -417,3 +420,5 @@ function CompanyCard({
         </div>
     );
 }
+
+

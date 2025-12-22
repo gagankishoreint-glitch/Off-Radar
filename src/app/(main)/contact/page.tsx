@@ -66,7 +66,7 @@ export default function ContactPage() {
                                                 href={teamLeader.github}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-foreground/5 text-foreground rounded-lg hover:bg-foreground/10 transition-colors font-semibold"
+                                                className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors font-semibold"
                                             >
                                                 <Github className="w-4 h-4" />
                                                 GitHub

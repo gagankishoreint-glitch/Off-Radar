@@ -12,6 +12,8 @@ import { Radar, ArrowRight, Search, Check, TrendingUp, ShieldCheck, Banknote, Br
 import { COMPANIES } from '@/lib/company-data';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
+import { useCurrencyStore } from '@/store/use-currency-store';
+import { CURRENCIES, CurrencyCode } from '@/lib/currency';
 
 const DEFAULT_OFFER: Partial<Offer> = {
     company: '',
@@ -48,14 +50,17 @@ const OfferInputCard = ({
     label,
     offer,
     setOffer,
-    defaultLabel
+    defaultLabel,
+    currency
 }: {
     label: string,
     offer: Partial<Offer>,
     setOffer: (o: Partial<Offer>) => void,
-    defaultLabel: string
+    defaultLabel: string,
+    currency: CurrencyCode
 }) => {
     const dynamicLabel = getDynamicLabel(offer, defaultLabel);
+    const symbol = CURRENCIES[currency]?.symbol || currency;
 
     return (
         <div className="bg-white dark:bg-card p-6 rounded-xl shadow-sm border border-border">
@@ -96,9 +101,9 @@ const OfferInputCard = ({
                 {/* C2: CTC & Location */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">Total CTC (LPA)</label>
+                        <label className="text-xs text-muted-foreground mb-1 block">Total CTC ({currency === 'INR' ? 'LPA' : currency})</label>
                         <div className="relative">
-                            <span className="absolute left-3 top-3 text-xs font-bold text-muted-foreground">₹</span>
+                            <span className="absolute left-3 top-3 text-xs font-bold text-muted-foreground">{symbol}</span>
                             <input
                                 className="w-full pl-7 p-2.5 bg-secondary/50 rounded-md border border-input text-sm font-medium"
                                 placeholder="18.5"
@@ -176,6 +181,7 @@ export default function ComparePage() {
     const router = useRouter();
     const createDocument = useDocumentStore((state) => state.createDocument);
     const updateDocument = useDocumentStore((state) => state.updateDocument);
+    const { currency } = useCurrencyStore();
 
     const [offerA, setOfferA] = useState<Partial<Offer>>({ ...DEFAULT_OFFER });
     const [offerB, setOfferB] = useState<Partial<Offer>>({ ...DEFAULT_OFFER });
@@ -214,12 +220,14 @@ export default function ComparePage() {
                     defaultLabel="Safe Choice"
                     offer={offerA}
                     setOffer={setOfferA}
+                    currency={currency}
                 />
                 <OfferInputCard
                     label="Offer B"
                     defaultLabel="Moonshot"
                     offer={offerB}
                     setOffer={setOfferB}
+                    currency={currency}
                 />
             </div>
 

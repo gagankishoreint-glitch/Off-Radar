@@ -2,16 +2,20 @@
 
 import { COMPANIES, TIER_TOOLTIPS } from '@/lib/company-data';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Building2, TrendingUp, Clock, GraduationCap, Briefcase, DollarSign, Users, Heart } from 'lucide-react';
+import { ArrowLeft, MapPin, Building2, TrendingUp, Clock, GraduationCap, Briefcase, DollarSign, Users, Heart, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/store/use-user-store';
 import { cn } from '@/lib/utils';
-import { ArrowUpRight } from 'lucide-react';
+import { useCurrencyStore } from '@/store/use-currency-store';
+import { convertSalary, getConvertedValue, formatValue } from '@/lib/currency';
+
+// ...
 
 export default function CompanyDetailPage() {
     const params = useParams();
     const id = params?.id as string;
+    const { currency } = useCurrencyStore();
 
     const company = COMPANIES.find(c => c.id === id);
     const { toggleWishlist, isInWishlist } = useUserStore();
@@ -27,7 +31,6 @@ export default function CompanyDetailPage() {
     }
 
     const applyLink = company.careersUrl || `https://www.google.com/search?q=${encodeURIComponent(company.name + ' careers india')}`;
-
 
     const getWLBStyle = (wlb: string) => {
         switch (wlb) {
@@ -120,19 +123,19 @@ export default function CompanyDetailPage() {
                         {/* Salary Card */}
                         <div className="bg-muted/50 rounded-xl p-6 text-center shrink-0 min-w-[200px]">
                             <div className="text-3xl font-bold text-foreground mb-1">
-                                ₹{company.salary.minLPA} - {company.salary.maxLPA} LPA
+                                {convertSalary(company.salary.minLPA, currency)} - {convertSalary(company.salary.maxLPA, currency).replace(currency === 'INR' ? ' LPA' : '/yr', '')}{currency === 'INR' ? ' LPA' : ''}
                             </div>
                             <div className="text-sm text-muted-foreground mb-3">
                                 ~{company.salary.inHandPercent}% in-hand monthly
                             </div>
                             <div className="text-xs text-muted-foreground">
-                                ≈ ₹{Math.round(company.salary.minLPA * 100000 * (company.salary.inHandPercent / 100) / 12 / 1000)}k - ₹{Math.round(company.salary.maxLPA * 100000 * (company.salary.inHandPercent / 100) / 12 / 1000)}k/month
+                                ≈ {formatValue(getConvertedValue(company.salary.minLPA, currency) * (company.salary.inHandPercent / 100) / 12, currency)} - {formatValue(getConvertedValue(company.salary.maxLPA, currency) * (company.salary.inHandPercent / 100) / 12, currency)}/mo
                             </div>
                         </div>
-                    </div>
+                    </div >
 
                     {/* Quick Info Row */}
-                    <div className="flex flex-wrap gap-4 text-sm">
+                    < div className="flex flex-wrap gap-4 text-sm" >
                         <span className="flex items-center gap-2 text-muted-foreground">
                             <MapPin className="w-4 h-4" />
                             {company.location}
@@ -149,13 +152,13 @@ export default function CompanyDetailPage() {
                             <Clock className="w-4 h-4" />
                             WLB: {company.culture.wlb}
                         </span>
-                    </div>
-                </div>
+                    </div >
+                </div >
 
                 {/* Details Grid */}
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                < div className="grid md:grid-cols-2 gap-6 mb-8" >
                     {/* Domains */}
-                    <div className="bg-card border border-border rounded-xl p-6">
+                    < div className="bg-card border border-border rounded-xl p-6" >
                         <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                             <Briefcase className="w-5 h-5 text-muted-foreground" />
                             Domains
@@ -167,10 +170,10 @@ export default function CompanyDetailPage() {
                                 </span>
                             ))}
                         </div>
-                    </div>
+                    </div >
 
                     {/* Role Types */}
-                    <div className="bg-card border border-border rounded-xl p-6">
+                    < div className="bg-card border border-border rounded-xl p-6" >
                         <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                             <Users className="w-5 h-5 text-muted-foreground" />
                             Role Types
@@ -182,10 +185,10 @@ export default function CompanyDetailPage() {
                                 </span>
                             ))}
                         </div>
-                    </div>
+                    </div >
 
                     {/* Culture */}
-                    <div className="bg-card border border-border rounded-xl p-6">
+                    < div className="bg-card border border-border rounded-xl p-6" >
                         <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                             <Clock className="w-5 h-5 text-muted-foreground" />
                             Culture
@@ -202,10 +205,10 @@ export default function CompanyDetailPage() {
                                 <span className="text-foreground font-medium">{company.culture.learning}</span>
                             </div>
                         </div>
-                    </div>
+                    </div >
 
                     {/* Quick Stats */}
-                    <div className="bg-card border border-border rounded-xl p-6">
+                    < div className="bg-card border border-border rounded-xl p-6" >
                         <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                             <TrendingUp className="w-5 h-5 text-muted-foreground" />
                             Quick Stats
@@ -224,113 +227,119 @@ export default function CompanyDetailPage() {
                                 </span>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div >
+                </div >
 
                 {/* Why Join */}
-                {company.whyJoin && company.whyJoin.length > 0 && (
-                    <div className="bg-card border border-border rounded-xl p-6 mb-8">
-                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                            <GraduationCap className="w-5 h-5 text-muted-foreground" />
-                            Why Join {company.name}?
-                        </h3>
-                        <ul className="grid md:grid-cols-2 gap-3">
-                            {company.whyJoin.map((reason, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                    <span className="text-green-500 mt-1">•</span>
-                                    <span className="text-muted-foreground">{reason}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                {
+                    company.whyJoin && company.whyJoin.length > 0 && (
+                        <div className="bg-card border border-border rounded-xl p-6 mb-8">
+                            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                                <GraduationCap className="w-5 h-5 text-muted-foreground" />
+                                Why Join {company.name}?
+                            </h3>
+                            <ul className="grid md:grid-cols-2 gap-3">
+                                {company.whyJoin.map((reason, i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <span className="text-green-500 mt-1">•</span>
+                                        <span className="text-muted-foreground">{reason}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )
+                }
 
                 {/* Internship Opportunities (New Section) */}
-                {company.internship && (
-                    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/10 border border-indigo-100 dark:border-indigo-800 rounded-xl p-6 mb-8">
-                        <h3 className="text-lg font-semibold text-indigo-700 dark:text-indigo-400 mb-4 flex items-center gap-2">
-                            <Briefcase className="w-5 h-5" />
-                            Internship Opportunities
-                        </h3>
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <h4 className="font-semibold text-foreground text-lg mb-1">{company.internship.role}</h4>
-                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                    {company.internship.duration && (
-                                        <span className="flex items-center gap-1">
-                                            <Clock className="w-4 h-4" /> {company.internship.duration}
-                                        </span>
-                                    )}
+                {
+                    company.internship && (
+                        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/10 border border-indigo-100 dark:border-indigo-800 rounded-xl p-6 mb-8">
+                            <h3 className="text-lg font-semibold text-indigo-700 dark:text-indigo-400 mb-4 flex items-center gap-2">
+                                <Briefcase className="w-5 h-5" />
+                                Internship Opportunities
+                            </h3>
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div>
+                                    <h4 className="font-semibold text-foreground text-lg mb-1">{company.internship.role}</h4>
+                                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                        {company.internship.duration && (
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-4 h-4" /> {company.internship.duration}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="bg-background/80 backdrop-blur-sm p-4 rounded-lg border border-indigo-100 dark:border-indigo-800 shadow-sm min-w-[200px] text-center">
+                                    <span className="block text-xs text-muted-foreground uppercase tracking-wider mb-1">Monthly Stipend</span>
+                                    <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                        ₹{(company.internship.minStipend / 1000).toFixed(0)}k - {(company.internship.maxStipend / 1000).toFixed(0)}k
+                                    </span>
                                 </div>
                             </div>
-                            <div className="bg-background/80 backdrop-blur-sm p-4 rounded-lg border border-indigo-100 dark:border-indigo-800 shadow-sm min-w-[200px] text-center">
-                                <span className="block text-xs text-muted-foreground uppercase tracking-wider mb-1">Monthly Stipend</span>
-                                <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                                    ₹{(company.internship.minStipend / 1000).toFixed(0)}k - {(company.internship.maxStipend / 1000).toFixed(0)}k
-                                </span>
-                            </div>
                         </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* Deep Dive Analysis (New Section) */}
-                {company.detailedAnalysis && (
-                    <div className="mb-12">
-                        <h3 className="text-2xl font-heading font-bold mb-6 flex items-center gap-2">
-                            🔍 Deep Dive Analysis
-                        </h3>
+                {
+                    company.detailedAnalysis && (
+                        <div className="mb-12">
+                            <h3 className="text-2xl font-heading font-bold mb-6 flex items-center gap-2">
+                                🔍 Deep Dive Analysis
+                            </h3>
 
-                        {company.detailedAnalysis.highlight && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-8 italic text-muted-foreground">
-                                "{company.detailedAnalysis.highlight}"
+                            {company.detailedAnalysis.highlight && (
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-8 italic text-muted-foreground">
+                                    "{company.detailedAnalysis.highlight}"
+                                </div>
+                            )}
+
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {/* Pros */}
+                                <div className="bg-card border border-border rounded-xl p-6">
+                                    <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center gap-2">
+                                        ✅ The Good
+                                    </h4>
+                                    <ul className="space-y-3">
+                                        {company.detailedAnalysis.pros.map((item, i) => (
+                                            <li key={i} className="text-sm text-muted-foreground leading-relaxed">
+                                                <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>') }} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Cons */}
+                                <div className="bg-card border border-border rounded-xl p-6">
+                                    <h4 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
+                                        ❌ The Bad
+                                    </h4>
+                                    <ul className="space-y-3">
+                                        {company.detailedAnalysis.cons.map((item, i) => (
+                                            <li key={i} className="text-sm text-muted-foreground leading-relaxed">
+                                                <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>') }} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
-                        )}
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {/* Pros */}
-                            <div className="bg-card border border-border rounded-xl p-6">
-                                <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center gap-2">
-                                    ✅ The Good
+                            {/* Recent Developments */}
+                            <div className="mt-8 bg-card border border-border rounded-xl p-6">
+                                <h4 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                                    ⚡ Application Strategy (2024-25)
                                 </h4>
-                                <ul className="space-y-3">
-                                    {company.detailedAnalysis.pros.map((item, i) => (
-                                        <li key={i} className="text-sm text-muted-foreground leading-relaxed">
-                                            <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>') }} />
-                                        </li>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    {company.detailedAnalysis.recentDevelopments.map((item, i) => (
+                                        <div key={i} className="bg-muted p-4 rounded-lg text-sm">
+                                            <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground block mb-1">$1</strong>') }} />
+                                        </div>
                                     ))}
-                                </ul>
-                            </div>
-
-                            {/* Cons */}
-                            <div className="bg-card border border-border rounded-xl p-6">
-                                <h4 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
-                                    ❌ The Bad
-                                </h4>
-                                <ul className="space-y-3">
-                                    {company.detailedAnalysis.cons.map((item, i) => (
-                                        <li key={i} className="text-sm text-muted-foreground leading-relaxed">
-                                            <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>') }} />
-                                        </li>
-                                    ))}
-                                </ul>
+                                </div>
                             </div>
                         </div>
-
-                        {/* Recent Developments */}
-                        <div className="mt-8 bg-card border border-border rounded-xl p-6">
-                            <h4 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                                ⚡ Application Strategy (2024-25)
-                            </h4>
-                            <div className="grid md:grid-cols-3 gap-4">
-                                {company.detailedAnalysis.recentDevelopments.map((item, i) => (
-                                    <div key={i} className="bg-muted p-4 rounded-lg text-sm">
-                                        <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground block mb-1">$1</strong>') }} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* CTA */}
                 <div className="text-center flex justify-center items-center gap-4">
@@ -349,7 +358,7 @@ export default function CompanyDetailPage() {
                         </Button>
                     </a>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

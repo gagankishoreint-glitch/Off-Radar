@@ -6,12 +6,15 @@ import { Calculator, DollarSign, Building2, Info, TrendingDown, ArrowRight, Chec
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useCurrencyStore } from '@/store/use-currency-store';
+import { CURRENCIES, convertSalary, formatValue } from '@/lib/currency';
 
 export default function CalculatorPage() {
     const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
     const [ctc, setCtc] = useState<number | ''>('');
     const [bonus, setBonus] = useState<number | ''>(0);
     const [showBreakdown, setShowBreakdown] = useState(false);
+    const { currency } = useCurrencyStore();
 
     // Derived state
     const selectedCompany = useMemo(() =>
@@ -256,7 +259,10 @@ export default function CalculatorPage() {
                                         </div>
                                         <div className="flex items-baseline gap-2">
                                             <span className="text-6xl md:text-7xl font-bold tracking-tight">
-                                                ₹{(result.monthly / 1000).toLocaleString('en-IN', { maximumFractionDigits: 1 })}k
+                                                {currency === 'INR'
+                                                    ? `₹${(result.monthly / 1000).toLocaleString('en-IN', { maximumFractionDigits: 1 })}k`
+                                                    : formatValue(result.monthly * CURRENCIES[currency].rate, currency)
+                                                }
                                             </span>
                                             <span className="text-xl text-white/40">/ mo</span>
                                         </div>
@@ -297,11 +303,11 @@ export default function CalculatorPage() {
                                     <div className="grid grid-cols-2 gap-4 mt-auto">
                                         <div className="p-4 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                                             <p className="text-xs text-white/50 mb-1">Annual Take Home</p>
-                                            <p className="text-lg font-semibold">₹{(result.annual / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} LPA</p>
+                                            <p className="text-lg font-semibold">{convertSalary(result.annual / 100000, currency)}</p>
                                         </div>
                                         <div className="p-4 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                                             <p className="text-xs text-white/50 mb-1">Total Deductions</p>
-                                            <p className="text-lg font-semibold text-red-300">- ₹{(result.baseDeduction / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} L</p>
+                                            <p className="text-lg font-semibold text-red-300">- {convertSalary(result.baseDeduction / 100000, currency)}</p>
                                         </div>
                                     </div>
 
