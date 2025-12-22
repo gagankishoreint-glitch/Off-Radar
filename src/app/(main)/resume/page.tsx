@@ -2,43 +2,119 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Search, Sparkles, ArrowRight, Loader2, Download, Building2, Target, ChevronRight, Check, X } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Search, Sparkles, ArrowRight, Loader2, Download, Building2, Target, ChevronRight, Check, X, ArrowLeft, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-// Simulated Target Data
-const TARGET_PRESETS = {
+// Expanded FAANG+ Database
+const COMPANIES_DB = {
     'google': {
         name: 'Google',
-        role: 'Software Engineer, Early Career',
         icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
-        hardSkills: ['Data Structures', 'Algorithms', 'System Design', 'C++', 'Java', 'Distributed Systems', 'Linux'],
-        softSkills: ['Problem Solving', 'Adaptability', 'Googliness', 'Collaboration'],
-        keywords: ['Scalability', 'Performance', 'Optimization', 'Cloud']
+        roles: {
+            'swe-early': {
+                title: 'Software Engineer, University Grad',
+                hardSkills: ['Data Structures', 'Algorithms', 'System Design', 'C++', 'Java', 'Python', 'Linux', 'Distributed Systems'],
+                softSkills: ['Problem Solving', 'Adaptability', 'Googliness', 'Collaboration', 'Ambiguity'],
+                keywords: ['Scalability', 'Performance', 'Optimization', 'Cloud', 'Google Cloud Platform']
+            },
+            'swe-intern': {
+                title: 'Software Engineering Intern',
+                hardSkills: ['Data Structures', 'JAVA', 'C++', 'Python', 'Algorithms'],
+                softSkills: ['Learning Agility', 'Communication', 'Teamwork'],
+                keywords: ['GPA', 'Projects', 'Coding Competitions']
+            },
+            'pm': {
+                title: 'Associate Product Manager (APM)',
+                hardSkills: ['Product Design', 'Strategy', 'SQL', 'Data Analysis', 'UX Principles'],
+                softSkills: ['Leadership', 'Vision', 'Empathy', 'Communication'],
+                keywords: ['User Centric', 'Launch', 'Metrics', 'Roadmap']
+            }
+        }
+    },
+    'meta': {
+        name: 'Meta',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
+        roles: {
+            'swe-general': {
+                title: 'Software Engineer, University Grad',
+                hardSkills: ['PHP/Hack', 'React', 'GraphQL', 'Python', 'C++', 'System Design'],
+                softSkills: ['Move Fast', 'Impact Driven', 'Boldness'],
+                keywords: ['Billions of users', 'Scale', 'Social Graph']
+            },
+            'fe-swe': {
+                title: 'Front End Engineer',
+                hardSkills: ['JavaScript', 'React', 'HTML/CSS', 'Performance', 'WebAssembly'],
+                softSkills: ['Product Instincts', 'Design Eye'],
+                keywords: ['User Experience', 'Pixel Perfect', 'Components']
+            }
+        }
     },
     'amazon': {
         name: 'Amazon',
-        role: 'SDE I',
         icon: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
-        hardSkills: ['Java', 'Object Oriented Programming', 'AWS', 'DynamoDB', 'Microservices'],
-        softSkills: ['Customer Obsession', 'Ownership', 'Bias for Action', 'Deep Dive'],
-        keywords: ['Scale', 'Deliver Results', 'Operational Excellence']
+        roles: {
+            'sde-1': {
+                title: 'Software Development Engineer I',
+                hardSkills: ['Java', 'Object Oriented Design', 'AWS', 'DynamoDB', 'Distributed Systems'],
+                softSkills: ['Customer Obsession', 'Ownership', 'Bias for Action', 'Deep Dive'],
+                keywords: ['Operational Excellence', 'Scale', 'Deliver Results']
+            },
+            'sde-intern': {
+                title: 'SDE Intern',
+                hardSkills: ['Java', 'C++', 'Data Structures'],
+                softSkills: ['Learn and Be Curious', 'Insist on Highest Standards'],
+                keywords: ['Internship', 'Project']
+            }
+        }
+    },
+    'netflix': {
+        name: 'Netflix',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
+        roles: {
+            'senior-swe': {
+                title: 'Senior Software Engineer',
+                hardSkills: ['Java', 'Spring Boot', 'Microservices', 'Cassandra', 'Kafka', 'AWS'],
+                softSkills: ['Freedom and Responsibility', 'Context not Control', 'Highly Aligned'],
+                keywords: ['Streaming', 'Resilience', 'High Performance']
+            },
+            'platform': {
+                title: 'Platform Engineer',
+                hardSkills: ['Go', 'Python', 'Kubernetes', 'Docker', 'Infrastructure as Code'],
+                softSkills: ['Innovation', 'Selflessness'],
+                keywords: ['Developer Productivity', 'Tooling']
+            }
+        }
+    },
+    'apple': {
+        name: 'Apple',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+        roles: {
+            'ios': {
+                title: 'iOS Engineer',
+                hardSkills: ['Swift', 'Objective-C', 'UIKit', 'SwiftUI', 'Xcode', 'Core Data'],
+                softSkills: ['Attention to Detail', 'Perfectionism', 'Creativity'],
+                keywords: ['User Interface', 'Apple Ecosystem', 'Mobile']
+            },
+            'hardware': {
+                title: 'Hardware Engineer',
+                hardSkills: ['Verilog', 'SystemVerilog', 'ASIC Design', 'Python', 'C'],
+                softSkills: ['Collaboration', 'Innovation'],
+                keywords: ['Silicon', 'Chip', 'Performance/Watt']
+            }
+        }
     },
     'microsoft': {
         name: 'Microsoft',
-        role: 'Software Engineer',
         icon: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-        hardSkills: ['C#', '.NET', 'Azure', 'React', 'TypeScript', 'SQL'],
-        softSkills: ['Growth Mindset', 'Teamwork', 'Communication'],
-        keywords: ['Enterprise', 'Cloud Native', 'Full Stack']
-    },
-    'startup': {
-        name: 'Generic High-Growth Startup',
-        role: 'Full Stack Engineer',
-        icon: null,
-        hardSkills: ['React', 'Node.js', 'PostgreSQL', 'Next.js', 'TailwindCSS'],
-        softSkills: ['Fast-paced', 'Ownership', 'Hustle', 'Wear Many Hats'],
-        keywords: ['Ship Fast', 'Product-Led', 'End-to-End']
+        roles: {
+            'swe': {
+                title: 'Software Engineer',
+                hardSkills: ['C#', '.NET', 'Azure', 'SQL', 'TypeScript', 'React'],
+                softSkills: ['Growth Mindset', 'One Microsoft', 'Diverse & Inclusive'],
+                keywords: ['Enterprise', 'Cloud', 'Productivity']
+            }
+        }
     }
 };
 
@@ -49,6 +125,8 @@ type ScanResult = {
     missingSoftSkills: string[];
     formattingIssues: string[];
     wordCount: number;
+    targetCompany: string;
+    targetRole: string;
 };
 
 export default function ResumeScannerPage() {
@@ -56,7 +134,11 @@ export default function ResumeScannerPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [status, setStatus] = useState<'idle' | 'scanning' | 'results'>('idle');
     const [scanProgress, setScanProgress] = useState(0);
-    const [selectedTarget, setSelectedTarget] = useState<keyof typeof TARGET_PRESETS>('google');
+
+    // Selection State
+    const [selectedCompany, setSelectedCompany] = useState<keyof typeof COMPANIES_DB | null>(null);
+    const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
     const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'ats'>('overview');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,24 +160,25 @@ export default function ResumeScannerPage() {
         const droppedFile = e.dataTransfer.files[0];
         if (droppedFile && (droppedFile.type === "application/pdf" || droppedFile.type.includes("image"))) {
             setFile(droppedFile);
-            startScan();
+            // Don't auto-scan yet, ensure target is selected
         }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
-            startScan();
         }
     };
 
-    const startScan = () => {
+    const handleStartScan = () => {
+        if (!file || !selectedCompany || !selectedRole) return;
+
         setStatus('scanning');
         setScanProgress(0);
 
-        // Simulation: Calculate a random score based on the target
-        // For demo purposes, we'll randomize the "found" skills
-        const target = TARGET_PRESETS[selectedTarget];
+        const companyData = COMPANIES_DB[selectedCompany];
+        // @ts-ignore
+        const roleData = companyData.roles[selectedRole];
 
         let currentProgress = 0;
         const interval = setInterval(() => {
@@ -108,30 +191,52 @@ export default function ResumeScannerPage() {
             setScanProgress(100);
 
             // Generate Mock Results
-            const randomScore = Math.floor(Math.random() * (85 - 40) + 40); // 40-85 range
+            const randomScore = Math.floor(Math.random() * (90 - 45) + 45); // 45-90 range
 
             setResults({
                 score: randomScore,
-                matchRate: randomScore > 75 ? 'High' : randomScore > 50 ? 'Medium' : 'Low',
-                missingKeySkills: target.hardSkills.filter(() => Math.random() > 0.5), // Randomly miss 50%
-                missingSoftSkills: target.softSkills.filter(() => Math.random() > 0.6),
-                formattingIssues: Math.random() > 0.5 ? ['Date format inconsistency', 'Missing LinkedIn URL'] : [],
-                wordCount: 450
+                matchRate: randomScore > 80 ? 'High' : randomScore > 60 ? 'Medium' : 'Low',
+                missingKeySkills: roleData.hardSkills.filter(() => Math.random() > 0.4),
+                missingSoftSkills: roleData.softSkills.filter(() => Math.random() > 0.5),
+                formattingIssues: Math.random() > 0.6 ? ['Date format inconsistency'] : [],
+                wordCount: 450,
+                targetCompany: companyData.name,
+                targetRole: roleData.title
             });
 
             setTimeout(() => setStatus('results'), 500);
         }, 6000);
     };
 
-    const reset = () => {
-        setFile(null);
+    const resetScan = () => {
         setStatus('idle');
         setResults(null);
         setScanProgress(0);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+        // Keep file and selection, or clear? Let's clear result-dependent things but maybe keep file
+        // To be safe, clear "Results" state but keep selection state so they can re-scan easily if they want, 
+        // or they can change selection.
     };
 
-    const target = TARGET_PRESETS[selectedTarget];
+    const fullReset = () => {
+        setFile(null);
+        setStatus('idle');
+        setResults(null);
+        setSelectedCompany(null);
+        setSelectedRole(null);
+        setScanProgress(0);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+
+    // Helper to get current role data safely
+    const getCurrentRoleData = () => {
+        if (selectedCompany && selectedRole) {
+            // @ts-ignore
+            return COMPANIES_DB[selectedCompany].roles[selectedRole];
+        }
+        return null;
+    };
+
+    const roleData = getCurrentRoleData();
 
     return (
         <div className="min-h-screen bg-background">
@@ -143,89 +248,149 @@ export default function ResumeScannerPage() {
                         AI Resume Scanner
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Simulate an ATS scan against top tech companies. See exactly what recruiters see.
+                        Simulate an ATS scan against FAANG hiring criteria.
                     </p>
                 </div>
 
                 {status === 'idle' && (
-                    <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 items-start">
+                    <div className="max-w-5xl mx-auto grid md:grid-cols-12 gap-8 items-start">
 
-                        {/* 1. Target Selector */}
-                        <div className="md:col-span-1 bg-background border border-border rounded-xl p-6 space-y-4 shadow-sm">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Target className="w-5 h-5 text-primary" />
-                                <h3 className="font-semibold text-lg">Goal Target</h3>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Who are you trying to impress? We'll load their ATS keywords.
-                            </p>
+                        {/* 1. Configuration Panel */}
+                        <div className="md:col-span-5 bg-background border border-border rounded-xl p-6 space-y-6 shadow-sm">
+                            <div>
+                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                                    <Target className="w-5 h-5 text-primary" />
+                                    1. Select Target
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Choose the company to load their specific ATS keywords.
+                                </p>
 
-                            <div className="space-y-3">
-                                {Object.entries(TARGET_PRESETS).map(([key, data]) => (
-                                    <button
-                                        key={key}
-                                        onClick={() => setSelectedTarget(key as any)}
-                                        className={cn(
-                                            "w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left",
-                                            selectedTarget === key
-                                                ? "border-primary bg-primary/5 ring-1 ring-primary"
-                                                : "border-border hover:bg-muted"
-                                        )}
-                                    >
-                                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-border shadow-sm flex-shrink-0">
-                                            {data.icon ? (
-                                                <img src={data.icon} alt={data.name} className="w-6 h-6 object-contain" />
-                                            ) : (
-                                                <Building2 className="w-5 h-5 text-muted-foreground" />
+                                <div className="grid grid-cols-2 gap-3 mb-6">
+                                    {Object.entries(COMPANIES_DB).map(([key, data]) => (
+                                        <button
+                                            key={key}
+                                            onClick={() => { setSelectedCompany(key as any); setSelectedRole(null); }}
+                                            className={cn(
+                                                "flex flex-col items-center justify-center gap-2 p-4 rounded-lg border transition-all hover:bg-muted/50",
+                                                selectedCompany === key
+                                                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                                    : "border-border"
                                             )}
+                                        >
+                                            <img src={data.icon} alt={data.name} className="w-8 h-8 object-contain" />
+                                            <span className="font-medium text-sm">{data.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {selectedCompany && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="space-y-3 pt-4 border-t border-border"
+                                    >
+                                        <h4 className="text-sm font-medium text-muted-foreground">Select Role</h4>
+                                        <div className="space-y-2">
+                                            {/* @ts-ignore */}
+                                            {Object.entries(COMPANIES_DB[selectedCompany].roles).map(([roleKey, role]: [string, any]) => (
+                                                <button
+                                                    key={roleKey}
+                                                    onClick={() => setSelectedRole(roleKey)}
+                                                    className={cn(
+                                                        "w-full text-left p-3 rounded-md text-sm transition-colors border",
+                                                        selectedRole === roleKey
+                                                            ? "bg-primary text-primary-foreground border-primary"
+                                                            : "bg-background hover:bg-muted border-border"
+                                                    )}
+                                                >
+                                                    {role.title}
+                                                </button>
+                                            ))}
                                         </div>
-                                        <div>
-                                            <div className="font-medium text-sm">{data.name}</div>
-                                            <div className="text-xs text-muted-foreground">{data.role}</div>
-                                        </div>
-                                        {selectedTarget === key && <CheckCircle2 className="w-4 h-4 text-primary ml-auto" />}
-                                    </button>
-                                ))}
+                                    </motion.div>
+                                )}
                             </div>
                         </div>
 
                         {/* 2. Upload Area */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={cn(
-                                "md:col-span-2 relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 h-full flex flex-col justify-center items-center",
-                                isDragging
-                                    ? "border-primary bg-primary/5 scale-[1.02]"
-                                    : "border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/30"
-                            )}
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept=".pdf,.png,.jpg,.jpeg"
-                                onChange={handleFileSelect}
-                            />
-                            <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mb-6">
-                                <Upload className="w-10 h-10 text-muted-foreground" />
+                        <div className="md:col-span-7 flex flex-col h-full">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={cn(
+                                    "flex-1 relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 flex flex-col justify-center items-center bg-muted/10",
+                                    isDragging
+                                        ? "border-primary bg-primary/5 scale-[1.02]"
+                                        : "border-muted-foreground/30 hover:border-primary/50"
+                                )}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept=".pdf,.png,.jpg,.jpeg"
+                                    onChange={handleFileSelect}
+                                />
+                                {file ? (
+                                    <div className="animate-in zoom-in-50 duration-300">
+                                        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto text-primary">
+                                            <FileText className="w-10 h-10" />
+                                        </div>
+                                        <h3 className="text-xl font-semibold mb-1">{file.name}</h3>
+                                        <p className="text-sm text-muted-foreground mb-6">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                                            className="text-sm text-red-500 hover:text-red-600 font-medium"
+                                        >
+                                            Remove File
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mb-6">
+                                            <Upload className="w-10 h-10 text-muted-foreground" />
+                                        </div>
+                                        <h3 className="text-2xl font-semibold mb-2">Upload Resume</h3>
+                                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                                            Drag & drop your PDF here.
+                                        </p>
+                                        <button className="px-8 py-3 bg-muted text-foreground border border-input font-medium rounded-lg hover:bg-muted/80 transition-colors">
+                                            Select File
+                                        </button>
+                                    </>
+                                )}
+                            </motion.div>
+
+                            <div className="mt-6">
+                                <button
+                                    onClick={handleStartScan}
+                                    disabled={!file || !selectedCompany || !selectedRole}
+                                    className={cn(
+                                        "w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3",
+                                        (!file || !selectedCompany || !selectedRole)
+                                            ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                            : "bg-primary text-primary-foreground hover:opacity-90 shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0"
+                                    )}
+                                >
+                                    <Sparkles className="w-5 h-5" />
+                                    Run ATS Simulator
+                                </button>
+                                {(!selectedCompany || !selectedRole) && file && (
+                                    <p className="text-center text-sm text-red-500 mt-3 animate-pulse">
+                                        Please select a target company and role above.
+                                    </p>
+                                )}
                             </div>
-                            <h3 className="text-2xl font-semibold mb-2">Upload Resume</h3>
-                            <p className="text-muted-foreground mb-6 max-w-sm">
-                                Drag & drop your PDF here. We'll analyze it against <strong>{target.name}'s</strong> hiring criteria.
-                            </p>
-                            <button className="px-8 py-3 bg-foreground text-background font-medium rounded-lg hover:opacity-90 transition-opacity">
-                                Select File
-                            </button>
-                        </motion.div>
+                        </div>
                     </div>
                 )}
 
-                {status === 'scanning' && (
+                {status === 'scanning' && roleData && (
                     <div className="max-w-xl mx-auto text-center py-20">
                         <div className="relative w-32 h-32 mx-auto mb-8">
                             <svg className="w-full h-full transform -rotate-90">
@@ -244,8 +409,8 @@ export default function ResumeScannerPage() {
                             </div>
                         </div>
 
-                        <h3 className="text-2xl font-bold mb-2">Extracting Intelligence...</h3>
-                        <p className="text-muted-foreground mb-8">Comparing against {target.name} database...</p>
+                        <h3 className="text-2xl font-bold mb-2">Analyzing against {COMPANIES_DB[selectedCompany!].name}...</h3>
+                        <p className="text-muted-foreground mb-8">Comparing skills for <strong>{roleData.title}</strong> role</p>
 
                         <div className="text-sm text-left max-w-xs mx-auto space-y-2 font-mono text-muted-foreground bg-muted p-4 rounded-lg">
                             <div className={cn("flex items-center gap-2", scanProgress > 10 ? "text-green-500" : "opacity-50")}>
@@ -258,14 +423,24 @@ export default function ResumeScannerPage() {
                             </div>
                             <div className={cn("flex items-center gap-2", scanProgress > 70 ? "text-green-500" : "opacity-50")}>
                                 {scanProgress > 70 ? <Check className="w-3 h-3" /> : <Loader2 className="w-3 h-3 animate-spin" />}
-                                Analyzing keyword density
+                                Checking for "{roleData.keywords[0]}"
                             </div>
                         </div>
                     </div>
                 )}
 
-                {status === 'results' && results && (
+                {status === 'results' && results && roleData && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                        {/* Navigation Back */}
+                        <div className="flex justify-start">
+                            <button
+                                onClick={fullReset}
+                                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-lg hover:bg-muted"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                Switch Target / Upload New
+                            </button>
+                        </div>
 
                         {/* Top Summary Card */}
                         <div className="bg-background border border-border rounded-xl p-8 shadow-sm">
@@ -296,39 +471,29 @@ export default function ResumeScannerPage() {
                                         {results.score > 75 ? "Great Match!" : "Needs Improvement"}
                                     </h2>
                                     <p className="text-muted-foreground mb-4 max-w-xl">
-                                        Your resume contains {results.score}% of the keywords typically found in <strong>{target.name}</strong> job descriptions for this role.
-                                        With a few tweaks, you can boost this significantly.
+                                        Your resume hits {results.score}% of the key signals for the <strong>{results.targetRole}</strong> role at <strong>{results.targetCompany}</strong>.
                                     </p>
                                     <div className="flex flex-wrap justify-center md:justify-start gap-4">
                                         <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
-                                            <Target className="w-4 h-4 text-primary" />
-                                            <span>Target: {target.role}</span>
+                                            <Building2 className="w-4 h-4 text-primary" />
+                                            <span>{results.targetCompany}</span>
                                         </div>
                                         <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
-                                            <FileText className="w-4 h-4 text-primary" />
-                                            <span>Word Count: {results.wordCount} (Optimal)</span>
+                                            <Target className="w-4 h-4 text-primary" />
+                                            <span>{roleData.keywords[0]} Focus</span>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="flex flex-col gap-3 min-w-[200px]">
-                                    <button onClick={reset} className="w-full px-4 py-2 border border-input rounded-lg hover:bg-muted font-medium transition-colors text-sm">
-                                        Scan New Resume
-                                    </button>
-                                    <button className="w-full px-4 py-2 bg-foreground text-background rounded-lg hover:opacity-90 font-medium transition-colors text-sm">
-                                        Download Report
-                                    </button>
                                 </div>
                             </div>
                         </div>
 
                         {/* Detailed Tabs */}
                         <div className="space-y-6">
-                            <div className="flex items-center gap-1 border-b border-border">
+                            <div className="flex items-center gap-1 border-b border-border overflow-x-auto">
                                 <button
                                     onClick={() => setActiveTab('overview')}
                                     className={cn(
-                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors",
+                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
                                         activeTab === 'overview' ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                                     )}
                                 >
@@ -337,20 +502,20 @@ export default function ResumeScannerPage() {
                                 <button
                                     onClick={() => setActiveTab('skills')}
                                     className={cn(
-                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors",
+                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
                                         activeTab === 'skills' ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                                     )}
                                 >
-                                    Skills Match
+                                    Skills Gap ({results.missingKeySkills.length})
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('ats')}
                                     className={cn(
-                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors",
+                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
                                         activeTab === 'ats' ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                                     )}
                                 >
-                                    Recruiter Checks
+                                    ATS Checks
                                 </button>
                             </div>
 
@@ -359,27 +524,27 @@ export default function ResumeScannerPage() {
                                     <div className="bg-background border border-border rounded-xl p-6">
                                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                                             <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                            What You Did Well
+                                            Matched Signals
                                         </h3>
                                         <ul className="space-y-3">
                                             <li className="flex items-start gap-3">
                                                 <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                     <Check className="w-3.5 h-3.5 text-green-600" />
                                                 </div>
-                                                <span className="text-sm text-muted-foreground">Found <strong>{target.hardSkills.length - results.missingKeySkills.length}/{target.hardSkills.length}</strong> critical hard skills required by {target.name}.</span>
+                                                <span className="text-sm text-muted-foreground">Found <strong>{roleData.hardSkills.length - results.missingKeySkills.length}/{roleData.hardSkills.length}</strong> required tech stack keywords.</span>
                                             </li>
                                             <li className="flex items-start gap-3">
                                                 <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                     <Check className="w-3.5 h-3.5 text-green-600" />
                                                 </div>
-                                                <span className="text-sm text-muted-foreground">Measurable results found (e.g., "Increased by 20%"). Recruiters love this.</span>
+                                                <span className="text-sm text-muted-foreground">Aligned with {results.targetCompany}'s values (e.g. "{roleData.softSkills[0]}").</span>
                                             </li>
                                         </ul>
                                     </div>
                                     <div className="bg-background border border-border rounded-xl p-6">
                                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                                             <AlertTriangle className="w-5 h-5 text-red-500" />
-                                            Critical Fixes Used
+                                            Missing Critical Keywords
                                         </h3>
                                         <ul className="space-y-3">
                                             {results.missingKeySkills.slice(0, 3).map(skill => (
@@ -387,15 +552,7 @@ export default function ResumeScannerPage() {
                                                     <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                         <X className="w-3.5 h-3.5 text-red-600" />
                                                     </div>
-                                                    <span className="text-sm text-muted-foreground">Missing keyword: <strong className="text-foreground">{skill}</strong>. Highly recommended for this role.</span>
-                                                </li>
-                                            ))}
-                                            {results.formattingIssues.map(issue => (
-                                                <li key={issue} className="flex items-start gap-3">
-                                                    <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                        <X className="w-3.5 h-3.5 text-red-600" />
-                                                    </div>
-                                                    <span className="text-sm text-muted-foreground">{issue}</span>
+                                                    <span className="text-sm text-muted-foreground">Missing: <strong className="text-foreground">{skill}</strong>.</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -407,43 +564,27 @@ export default function ResumeScannerPage() {
                                 <div className="bg-background border border-border rounded-xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
                                     <div className="grid grid-cols-12 bg-muted/50 p-4 border-b border-border text-sm font-medium text-muted-foreground">
                                         <div className="col-span-5">Skill</div>
-                                        <div className="col-span-3 text-center">In Job Description</div>
-                                        <div className="col-span-3 text-center">In Your Resume</div>
-                                        <div className="col-span-1">Status</div>
+                                        <div className="col-span-3 text-center">Relevance</div>
+                                        <div className="col-span-3 text-center">Status</div>
+                                        <div className="col-span-1"></div>
                                     </div>
                                     <div className="divide-y divide-border">
                                         {/* Hard Skills */}
-                                        {target.hardSkills.map(skill => {
+                                        {roleData.hardSkills.map((skill: string) => {
                                             const isMissing = results.missingKeySkills.includes(skill);
                                             return (
                                                 <div key={skill} className="grid grid-cols-12 p-4 text-sm items-center hover:bg-muted/30">
-                                                    <div className="col-span-5 font-medium">{skill} <span className="text-xs text-muted-foreground font-normal ml-2">(Hard Skill)</span></div>
-                                                    <div className="col-span-3 text-center"><div className="w-16 h-2 bg-foreground/20 rounded-full mx-auto" /></div>
+                                                    <div className="col-span-5 font-medium">{skill}</div>
+                                                    <div className="col-span-3 text-center">High</div>
                                                     <div className="col-span-3 text-center">
                                                         {isMissing ? (
-                                                            <div className="w-4 h-2 bg-red-200 rounded-full mx-auto" />
+                                                            <span className="text-red-500 text-xs bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">Missing</span>
                                                         ) : (
-                                                            <div className="w-16 h-2 bg-green-500 rounded-full mx-auto" />
+                                                            <span className="text-green-500 text-xs bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded">Found</span>
                                                         )}
                                                     </div>
                                                     <div className="col-span-1">
-                                                        {isMissing ? <X className="w-5 h-5 text-red-500" /> : <Check className="w-5 h-5 text-green-500" />}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                        {/* Soft Skills */}
-                                        {target.softSkills.map(skill => {
-                                            const isMissing = results.missingSoftSkills.includes(skill);
-                                            return (
-                                                <div key={skill} className="grid grid-cols-12 p-4 text-sm items-center hover:bg-muted/30">
-                                                    <div className="col-span-5 font-medium">{skill} <span className="text-xs text-muted-foreground font-normal ml-2">(Soft Skill)</span></div>
-                                                    <div className="col-span-3 text-center"><div className="w-12 h-2 bg-foreground/20 rounded-full mx-auto" /></div>
-                                                    <div className="col-span-3 text-center">
-                                                        {isMissing ? "-" : <div className="w-12 h-2 bg-green-500 rounded-full mx-auto" />}
-                                                    </div>
-                                                    <div className="col-span-1">
-                                                        {isMissing ? <AlertTriangle className="w-5 h-5 text-yellow-500" /> : <Check className="w-5 h-5 text-green-500" />}
+                                                        {isMissing ? <X className="w-4 h-4 text-red-500" /> : <Check className="w-4 h-4 text-green-500" />}
                                                     </div>
                                                 </div>
                                             );
@@ -459,7 +600,6 @@ export default function ResumeScannerPage() {
                                         { label: "Searchable Text", status: "pass", desc: "Text is selectable and not flattened." },
                                         { label: "Section Headings", status: "pass", desc: "Standard headers (Education, Experience) found." },
                                         { label: "Date Formatting", status: "warn", desc: "Use 'Month Year' format consistently (e.g., Nov 2023)." },
-                                        { label: "Job Titles", status: "pass", desc: "Clear job titles matched to standard hierarchy." },
                                         { label: "Contact Info", status: "pass", desc: "Email and Phone found." }
                                     ].map((check, i) => (
                                         <div key={i} className="flex items-center justify-between p-4 border border-border rounded-xl bg-background">
