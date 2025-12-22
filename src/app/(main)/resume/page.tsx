@@ -486,200 +486,205 @@ export default function ResumeScannerPage() {
                                 ))}
                             </div>
 
-                            {/* --- TAB CONTENT --- */}
+                            {/* --- TAB CONTENT AREA --- */}
+                            <div className="min-h-[500px]">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeTab}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        {activeTab === 'overview' && (
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <div className="bg-background border border-border rounded-xl p-6">
+                                                    <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                                                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                                        Key Strengths
+                                                    </h3>
+                                                    <ul className="space-y-3">
+                                                        {analysis.result.foundKeywords.length > 5 ? (
+                                                            <li className="flex items-start gap-3">
+                                                                <Check className="w-4 h-4 text-green-500 mt-1" />
+                                                                <span className="text-sm">Strong keyword coverage ({analysis.result.foundKeywords.length} found).</span>
+                                                            </li>
+                                                        ) : null}
+                                                        {analysis.result.formattingScore > 90 && (
+                                                            <li className="flex items-start gap-3">
+                                                                <Check className="w-4 h-4 text-green-500 mt-1" />
+                                                                <span className="text-sm">Clean, standard formatting detected.</span>
+                                                            </li>
+                                                        )}
+                                                        {analysis.result.projects.length > 0 && (
+                                                            <li className="flex items-start gap-3">
+                                                                <Check className="w-4 h-4 text-green-500 mt-1" />
+                                                                <span className="text-sm">Projects section parsed successfully.</span>
+                                                            </li>
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                                <div className="bg-background border border-border rounded-xl p-6">
+                                                    <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                                                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                                                        Critical Gaps
+                                                    </h3>
+                                                    <ul className="space-y-3">
+                                                        {analysis.result.recommendations.filter(r => r.type === 'Critical').slice(0, 3).map((rec, i) => (
+                                                            <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                                                                <X className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
+                                                                <span>{rec.text}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        )}
 
-                            {/* OVERVIEW TAB */}
-                            {activeTab === 'overview' && (
-                                <div className="grid md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-4 duration-500">
-                                    <div className="bg-background border border-border rounded-xl p-6">
-                                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                            Key Strengths
-                                        </h3>
-                                        <ul className="space-y-3">
-                                            {analysis.result.foundKeywords.length > 5 ? (
-                                                <li className="flex items-start gap-3">
-                                                    <Check className="w-4 h-4 text-green-500 mt-1" />
-                                                    <span className="text-sm">Strong keyword coverage ({analysis.result.foundKeywords.length} found).</span>
-                                                </li>
-                                            ) : null}
-                                            {analysis.result.formattingScore > 90 && (
-                                                <li className="flex items-start gap-3">
-                                                    <Check className="w-4 h-4 text-green-500 mt-1" />
-                                                    <span className="text-sm">Clean, standard formatting detected.</span>
-                                                </li>
-                                            )}
-                                            {analysis.result.projects.length > 0 && (
-                                                <li className="flex items-start gap-3">
-                                                    <Check className="w-4 h-4 text-green-500 mt-1" />
-                                                    <span className="text-sm">Projects section parsed successfully.</span>
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </div>
-                                    <div className="bg-background border border-border rounded-xl p-6">
-                                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                                            <AlertTriangle className="w-5 h-5 text-red-500" />
-                                            Critical Gaps
-                                        </h3>
-                                        <ul className="space-y-3">
-                                            {analysis.result.recommendations.filter(r => r.type === 'Critical').slice(0, 3).map((rec, i) => (
-                                                <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
-                                                    <X className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
-                                                    <span>{rec.text}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            )}
+                                        {activeTab === 'projects' && (
+                                            <div className="space-y-6">
+                                                {analysis.result.projects.length === 0 ? (
+                                                    <div className="text-center p-12 border border-dashed border-border rounded-xl">
+                                                        <p className="text-muted-foreground">No specific "Projects" section detected. This is a red flag for tech roles.</p>
+                                                    </div>
+                                                ) : (
+                                                    analysis.result.projects.map((proj, i) => (
+                                                        <div key={i} className="group bg-card border border-border rounded-xl p-6 hover:shadow-md transition-all">
+                                                            <div className="flex justify-between items-start mb-4">
+                                                                <div>
+                                                                    <h3 className="font-bold text-lg">{proj.title}</h3>
+                                                                    <div className="flex flex-wrap gap-2 mt-2">
+                                                                        {proj.tech.map((t, idx) => (
+                                                                            <span key={idx} className="px-2 py-0.5 bg-muted rounded text-xs font-mono">{t}</span>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground mb-4 italic pl-4 border-l-2 border-primary/20">
+                                                                "{proj.description}"
+                                                            </p>
+                                                            {proj.rewriteSuggestion && (
+                                                                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 p-4 rounded-lg">
+                                                                    <div className="flex items-center gap-2 mb-2 text-blue-700 dark:text-blue-300 font-semibold text-xs uppercase tracking-wide">
+                                                                        <Sparkles className="w-3 h-3" /> AI Rewrite Suggestion
+                                                                    </div>
+                                                                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                                                        {proj.rewriteSuggestion}
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        )}
 
-                            {/* PROJECTS TAB */}
-                            {activeTab === 'projects' && (
-                                <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                                    {analysis.result.projects.length === 0 ? (
-                                        <div className="text-center p-12 border border-dashed border-border rounded-xl">
-                                            <p className="text-muted-foreground">No specific "Projects" section detected. This is a red flag for tech roles.</p>
-                                        </div>
-                                    ) : (
-                                        analysis.result.projects.map((proj, i) => (
-                                            <div key={i} className="group bg-card border border-border rounded-xl p-6 hover:shadow-md transition-all">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div>
-                                                        <h3 className="font-bold text-lg">{proj.title}</h3>
-                                                        <div className="flex flex-wrap gap-2 mt-2">
-                                                            {proj.tech.map((t, idx) => (
-                                                                <span key={idx} className="px-2 py-0.5 bg-muted rounded text-xs font-mono">{t}</span>
+                                        {activeTab === 'experience' && (
+                                            <div className="space-y-6">
+                                                {analysis.result.experience.length === 0 ? (
+                                                    <div className="text-center p-12 border border-dashed border-border rounded-xl">
+                                                        <p className="text-muted-foreground">No "Experience" section parsed. Check your headers.</p>
+                                                    </div>
+                                                ) : (
+                                                    analysis.result.experience.map((exp, i) => (
+                                                        <div key={i} className="bg-card border border-border rounded-xl p-6 relative overflow-hidden">
+                                                            {exp.gapAlert && (
+                                                                <div className="absolute top-0 right-0 p-2 bg-red-100 dark:bg-red-900/30 text-red-600 text-xs font-bold rounded-bl-xl">
+                                                                    Impact Gap Detected
+                                                                </div>
+                                                            )}
+                                                            <div className="mb-4">
+                                                                <h3 className="font-bold text-lg">{exp.role}</h3>
+                                                                <p className="text-muted-foreground pointer-events-none">{exp.company} • {exp.duration}</p>
+                                                            </div>
+                                                            {exp.gapAlert ? (
+                                                                <div className="flex items-start gap-4 p-4 bg-muted rounded-lg">
+                                                                    <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                                                                    <div>
+                                                                        <p className="text-sm font-medium mb-1">Missing Quantifiable Metrics</p>
+                                                                        <p className="text-xs text-muted-foreground">{exp.gapAlert}</p>
+                                                                        <p className="text-xs text-foreground font-semibold mt-2">Try adding: "Engineered scalable API reducing latency by 40%..."</p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="text-sm text-green-600 flex items-center gap-2">
+                                                                    <CheckCircle2 className="w-4 h-4" /> Good use of impact metrics.
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'tech' && (
+                                            <div className="space-y-6">
+                                                <div className="grid md:grid-cols-2 gap-6">
+                                                    <div className="bg-card p-6 border border-border rounded-xl">
+                                                        <h3 className="font-semibold mb-4 text-green-600">✅ Proficient / Found</h3>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {analysis.result.techStack.proficient.concat(analysis.result.techStack.familiar).length > 0 ? (
+                                                                analysis.result.techStack.proficient.concat(analysis.result.techStack.familiar).map(t => (
+                                                                    <span key={t} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded border border-green-200 dark:border-green-800 text-sm">
+                                                                        {t}
+                                                                    </span>
+                                                                ))
+                                                            ) : <span className="text-muted-foreground text-sm">No tech stack keywords detected.</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-card p-6 border border-border rounded-xl">
+                                                        <h3 className="font-semibold mb-4 text-red-500">❌ Missing / Critical</h3>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {analysis.result.techStack.missing.map(t => (
+                                                                <span key={t} className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded border border-red-200 dark:border-red-800 text-sm">
+                                                                    {t}
+                                                                </span>
                                                             ))}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <p className="text-sm text-muted-foreground mb-4 italic pl-4 border-l-2 border-primary/20">
-                                                    "{proj.description}"
-                                                </p>
-                                                {proj.rewriteSuggestion && (
-                                                    <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 p-4 rounded-lg">
-                                                        <div className="flex items-center gap-2 mb-2 text-blue-700 dark:text-blue-300 font-semibold text-xs uppercase tracking-wide">
-                                                            <Sparkles className="w-3 h-3" /> AI Rewrite Suggestion
-                                                        </div>
-                                                        <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                                            {proj.rewriteSuggestion}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
-
-                            {/* EXPERIENCE TAB */}
-                            {activeTab === 'experience' && (
-                                <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                                    {analysis.result.experience.length === 0 ? (
-                                        <div className="text-center p-12 border border-dashed border-border rounded-xl">
-                                            <p className="text-muted-foreground">No "Experience" section parsed. Check your headers.</p>
-                                        </div>
-                                    ) : (
-                                        analysis.result.experience.map((exp, i) => (
-                                            <div key={i} className="bg-card border border-border rounded-xl p-6 relative overflow-hidden">
-                                                {exp.gapAlert && (
-                                                    <div className="absolute top-0 right-0 p-2 bg-red-100 dark:bg-red-900/30 text-red-600 text-xs font-bold rounded-bl-xl">
-                                                        Impact Gap Detected
-                                                    </div>
-                                                )}
-                                                <div className="mb-4">
-                                                    <h3 className="font-bold text-lg">{exp.role}</h3>
-                                                    <p className="text-muted-foreground pointer-events-none">{exp.company} • {exp.duration}</p>
-                                                </div>
-                                                {exp.gapAlert ? (
-                                                    <div className="flex items-start gap-4 p-4 bg-muted rounded-lg">
-                                                        <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                                                {!analysis.result.education.found && (
+                                                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-center gap-3">
+                                                        <AlertTriangle className="w-5 h-5 text-yellow-600" />
                                                         <div>
-                                                            <p className="text-sm font-medium mb-1">Missing Quantifiable Metrics</p>
-                                                            <p className="text-xs text-muted-foreground">{exp.gapAlert}</p>
-                                                            <p className="text-xs text-foreground font-semibold mt-2">Try adding: "Engineered scalable API reducing latency by 40%..."</p>
+                                                            <p className="text-sm font-bold text-yellow-800 dark:text-yellow-200">Education Section Missing</p>
+                                                            <p className="text-xs text-yellow-700 dark:text-yellow-300">Even for senior roles, ATS parsers often require a degree field.</p>
                                                         </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-green-600 flex items-center gap-2">
-                                                        <CheckCircle2 className="w-4 h-4" /> Good use of impact metrics.
                                                     </div>
                                                 )}
                                             </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
+                                        )}
 
-                            {/* TECH STACK TAB */}
-                            {activeTab === 'tech' && (
-                                <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="bg-card p-6 border border-border rounded-xl">
-                                            <h3 className="font-semibold mb-4 text-green-600">✅ Proficient / Found</h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                {analysis.result.techStack.proficient.concat(analysis.result.techStack.familiar).length > 0 ? (
-                                                    analysis.result.techStack.proficient.concat(analysis.result.techStack.familiar).map(t => (
-                                                        <span key={t} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded border border-green-200 dark:border-green-800 text-sm">
-                                                            {t}
-                                                        </span>
-                                                    ))
-                                                ) : <span className="text-muted-foreground text-sm">No tech stack keywords detected.</span>}
-                                            </div>
-                                        </div>
-                                        <div className="bg-card p-6 border border-border rounded-xl">
-                                            <h3 className="font-semibold mb-4 text-red-500">❌ Missing / Critical</h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                {analysis.result.techStack.missing.map(t => (
-                                                    <span key={t} className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded border border-red-200 dark:border-red-800 text-sm">
-                                                        {t}
-                                                    </span>
+                                        {activeTab === 'recs' && (
+                                            <div className="space-y-4">
+                                                <h3 className="text-xl font-bold mb-4">Prioritized Action Plan</h3>
+                                                {analysis.result.recommendations.map((rec, i) => (
+                                                    <div key={i} className="flex gap-4 p-4 border border-border rounded-xl bg-card hover:bg-muted/50 transition-colors">
+                                                        <div className={cn(
+                                                            "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-lg",
+                                                            rec.type === 'Critical' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                                                        )}>
+                                                            {i + 1}
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <span className={cn(
+                                                                    "px-2 py-0.5 text-[10px] uppercase font-bold rounded",
+                                                                    rec.type === 'Critical' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                                                                )}>
+                                                                    {rec.type}
+                                                                </span>
+                                                                <span className="text-xs text-muted-foreground">High Impact (+{rec.impact} pts)</span>
+                                                            </div>
+                                                            <p className="font-medium text-foreground">{rec.text}</p>
+                                                        </div>
+                                                    </div>
                                                 ))}
                                             </div>
-                                        </div>
-                                    </div>
-                                    {!analysis.result.education.found && (
-                                        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-center gap-3">
-                                            <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                                            <div>
-                                                <p className="text-sm font-bold text-yellow-800 dark:text-yellow-200">Education Section Missing</p>
-                                                <p className="text-xs text-yellow-700 dark:text-yellow-300">Even for senior roles, ATS parsers often require a degree field.</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* RECOMMENDATIONS TAB */}
-                            {activeTab === 'recs' && (
-                                <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
-                                    <h3 className="text-xl font-bold mb-4">Prioritized Action Plan</h3>
-                                    {analysis.result.recommendations.map((rec, i) => (
-                                        <div key={i} className="flex gap-4 p-4 border border-border rounded-xl bg-card hover:bg-muted/50 transition-colors">
-                                            <div className={cn(
-                                                "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-lg",
-                                                rec.type === 'Critical' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
-                                            )}>
-                                                {i + 1}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className={cn(
-                                                        "px-2 py-0.5 text-[10px] uppercase font-bold rounded",
-                                                        rec.type === 'Critical' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
-                                                    )}>
-                                                        {rec.type}
-                                                    </span>
-                                                    <span className="text-xs text-muted-foreground">High Impact (+{rec.impact} pts)</span>
-                                                </div>
-                                                <p className="font-medium text-foreground">{rec.text}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
+                                        )}
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
                 )}
