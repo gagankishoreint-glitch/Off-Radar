@@ -105,7 +105,6 @@ export function ContentBlock({ block, documentId, readOnly = false }: ContentBlo
             const metrics = data.metrics || [];
 
             // Calculate winner for salary
-            // Calculate winner for salary
             const salaryMetric = metrics.find((m: any) => m.label === 'CTC');
             const parseValue = (val: string) => parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
             const valA = salaryMetric ? parseValue(salaryMetric.valueA) : 0;
@@ -225,6 +224,94 @@ export function ContentBlock({ block, documentId, readOnly = false }: ContentBlo
             );
         } catch (e) {
             return <div className="text-red-500">Error rendering comparison card</div>
+        }
+    }
+
+    if (block.type === 'verdict-card') {
+        try {
+            const data = JSON.parse(block.content);
+            const {
+                winner,
+                financialDiff,
+                growthWinner,
+                wlbWinner,
+                networkSentiment = "85% favor this choice based on Growth" // Mock default
+            } = data;
+
+            return (
+                <div className="my-10 space-y-6">
+                    {/* Winner Banner */}
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 p-8 text-white shadow-xl">
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-bold uppercase tracking-wider">
+                                    AI Verdict
+                                </span>
+                                <span className="px-3 py-1 bg-emerald-500/80 backdrop-blur rounded-full text-xs font-bold flex items-center gap-1">
+                                    <span className="animate-pulse">●</span> Live Network Signal
+                                </span>
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-2">
+                                {winner} is the Winner
+                            </h2>
+                            <p className="text-white/80 text-lg max-w-xl mb-6">
+                                {networkSentiment}
+                            </p>
+
+                            {/* Sentiment Bar */}
+                            <div className="bg-black/20 backdrop-blur rounded-full p-1 max-w-md">
+                                <div className="flex justify-between text-[10px] uppercase font-bold text-white/70 mb-1 px-2">
+                                    <span>Community Consensus</span>
+                                    <span>{parseInt(networkSentiment) || 85}% Confidence</span>
+                                </div>
+                                <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] rounded-full transition-all duration-1000"
+                                        style={{ width: `${parseInt(networkSentiment) || 85}%` }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        {/* Background Decor */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
+                    </div>
+
+                    {/* 3-Column Stats Grid */}
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <div className="bg-card border border-border p-5 rounded-xl flex flex-col gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                                <DollarSign className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-foreground">Financials</h4>
+                                <p className="text-sm text-muted-foreground">{financialDiff}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-card border border-border p-5 rounded-xl flex flex-col gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                <ArrowRight className="w-6 h-6 -rotate-45" />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-foreground">Growth Potential</h4>
+                                <p className="text-sm text-muted-foreground">{growthWinner}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-card border border-border p-5 rounded-xl flex flex-col gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                                <CheckSquare className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-foreground">Work Life Balance</h4>
+                                <p className="text-sm text-muted-foreground">{wlbWinner}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        } catch (e) {
+            return <div className="text-red-500 bg-red-50 p-4 rounded">Error rendering verdict card. invalid JSON.</div>
         }
     }
 

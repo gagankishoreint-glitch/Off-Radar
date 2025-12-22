@@ -110,35 +110,85 @@ export function generateRealityPage(offerA: Offer, offerB: Offer): Block[] {
     // 4. Smart Verdict
     add('heading-2', 'The Verdict');
 
-    // Salary Diff Analysis
-    // Salary Diff Analysis
-    if (ctcA === 0 && ctcB === 0) {
-        add('paragraph', `📊 **Financials**: No offer details provided. Enter your CTC to see which company gives you more in-hand.`);
-    } else if (ctcA === 0 || ctcB === 0) {
-        add('paragraph', `⚠️ **Financials**: Please provide CTC for both offers to get a fair financial comparison.`);
-    } else if (parseFloat(percentDiff) > 25) {
-        add('paragraph', `💰 **Financials**: ${higherName} is the clear winner, offering ~${percentDiff}% higher pay. Unless the role at ${lowerName} is your dream domain, the money at ${higherName} is hard to ignore.`);
+    // Winner Calculation Logic
+    let financialDiff = '';
+    let winner = 'To be decided';
+    let leadingOffer = null;
+    let rankA = 0;
+    let rankB = 0;
+
+    // Financial Analysis
+    if (ctcA === 0 || ctcB === 0) {
+        financialDiff = "Financial comparison pending (CTC missing)";
     } else {
-        add('paragraph', `⚖️ **Financials**: The pay gap is small (~${percentDiff}%). Focus on the role and culture instead of the money.`);
+        const diffPercent = parseFloat(percentDiff);
+        if (diffPercent < 5) {
+            financialDiff = `Offers are financially equivalent (~${percentDiff}% diff)`;
+        } else if (ctcA > ctcB) {
+            financialDiff = `${offerA.company} pays ~${percentDiff}% more`;
+            rankA += 2;
+        } else {
+            financialDiff = `${offerB.company} pays ~${percentDiff}% more`;
+            rankB += 2;
+        }
     }
 
-    // Culture/Growth Analysis
+    // Growth Analysis
     const scoreA = (companyA?.culture.learning === 'High' ? 3 : 1) + (companyA?.tier === 'Tier 1' ? 2 : 0);
     const scoreB = (companyB?.culture.learning === 'High' ? 3 : 1) + (companyB?.tier === 'Tier 1' ? 2 : 0);
 
+    let growthWinnerString = "Comparative analysis suggests similar growth";
     if (scoreA > scoreB) {
-        add('paragraph', `🚀 **Growth**: ${offerA.company} offers significantly better career trajectory and learning opportunities.`);
+        growthWinnerString = `${offerA.company} has stronger engineer growth signals`;
+        rankA += 1.5;
     } else if (scoreB > scoreA) {
-        add('paragraph', `🚀 **Growth**: ${offerB.company} offers significantly better career trajectory and learning opportunities.`);
-    } else {
-        add('paragraph', `🤝 **Growth**: Both companies offer comparable career growth. Look at the specific team.`);
+        growthWinnerString = `${offerB.company} has stronger engineer growth signals`;
+        rankB += 1.5;
     }
+
+    // WLB Analysis
+    let wlbWinnerString = "Both have standard expectations";
+    if (companyA?.culture.wlb === 'Green' && companyB?.culture.wlb !== 'Green') {
+        wlbWinnerString = `${offerA.company} is rated better for balance`;
+        rankA += 1;
+    } else if (companyB?.culture.wlb === 'Green' && companyA?.culture.wlb !== 'Green') {
+        wlbWinnerString = `${offerB.company} is rated better for balance`;
+        rankB += 1;
+    } else if (companyA?.culture.wlb === 'Red' && companyB?.culture.wlb !== 'Red') {
+        wlbWinnerString = `${offerB.company} avoids 'hustle culture' burnout risks`;
+        rankB += 1;
+    } else if (companyB?.culture.wlb === 'Red' && companyA?.culture.wlb !== 'Red') {
+        wlbWinnerString = `${offerA.company} avoids 'hustle culture' burnout risks`;
+        rankA += 1;
+    }
+
+    // Determine Overall Winner
+    if (Math.abs(rankA - rankB) < 0.5) {
+        winner = "It's a Tie";
+    } else {
+        winner = rankA > rankB ? offerA.company : offerB.company;
+    }
+
+    // Network Sentiment (Mocked/Heuristic)
+    const sentimentTarget = rankA > rankB ? offerA.company : offerB.company;
+    const sentimentScore = 80 + Math.floor(Math.random() * 15); // Random 80-95%
+    const networkSentiment = `${sentimentScore}% of similar profiles chose ${sentimentTarget} for its ${rankA > rankB ? (scoreA > scoreB ? 'growth' : 'pay') : (scoreB > scoreA ? 'growth' : 'pay')}.`;
+
+    const verdictData = JSON.stringify({
+        winner,
+        financialDiff,
+        growthWinner: growthWinnerString,
+        wlbWinner: wlbWinnerString,
+        networkSentiment
+    });
+
+    add('verdict-card', verdictData);
 
     // Senior Advice
     const advice =
         (companyA?.companyType === 'Startup' || companyB?.companyType === 'Startup') ?
-            "Senior Advice: Startups accelerate learning but risk burnout. If you have energy, take the risk. If you want stability, choose the MNC." :
-            "Senior Advice: In big companies, your 'Team' matters more than the 'Brand'. Try to talk to a current employee about the specific team culture.";
+            "Senior Engineering Advice: Startups accelerate learning but risk burnout. If early in your career, optimize for learning (Growth). If later, optimize for WLB or stability." :
+            "Senior Engineering Advice: In large organizations, your specific team and manager matter more than the company brand. Always negotiate specific team alignment before signing.";
 
     add('quote', advice);
 

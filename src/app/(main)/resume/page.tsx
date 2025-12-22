@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Search, Sparkles, ArrowRight, Loader2, Download, Building2, Target, ChevronRight, Check, X, ArrowLeft, RefreshCw, Globe, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { analyzeResume, AnalysisResult } from '@/lib/resume-parser';
+import { ATS_MAPPING } from '@/lib/ats-data';
 
 // Expanded FAANG+ Database + General Option
 const COMPANIES_DB = {
@@ -136,20 +138,15 @@ const COMPANIES_DB = {
     }
 };
 
-type ScanResult = {
-    score: number;
-    matchRate: 'Low' | 'Medium' | 'High';
-    missingKeySkills: string[];
-    missingSoftSkills: string[];
-    formattingIssues: string[];
-    wordCount: number;
-    targetCompany: string;
-    targetRole: string;
+type AnalysisState = {
+    result: AnalysisResult | null;
+    targetRoleTitle: string;
+    targetCompanyName: string;
+    keywordsList: string[];
 };
 
 export default function ResumeScannerPage() {
-    const [file, setFile] = useState<File | null>(null);
-    const [isDragging, setIsDragging] = useState(false);
+    const [resumeText, setResumeText] = useState('');
     const [status, setStatus] = useState<'idle' | 'scanning' | 'results'>('idle');
     const [scanProgress, setScanProgress] = useState(0);
 
@@ -157,39 +154,41 @@ export default function ResumeScannerPage() {
     const [selectedCompany, setSelectedCompany] = useState<keyof typeof COMPANIES_DB | null>(null);
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
-    const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'ats'>('overview');
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'experience' | 'tech' | 'recs'>('overview');
 
-    // Simulated Results State
-    const [results, setResults] = useState<ScanResult | null>(null);
+    // Analysis Results Wrapper
+    const [analysis, setAnalysis] = useState<AnalysisState | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    const handleDragLeave = () => {
-        setIsDragging(false);
-    };
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
 
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
-        const droppedFile = e.dataTransfer.files[0];
-        if (droppedFile && (droppedFile.type === "application/pdf" || droppedFile.type.includes("image"))) {
-            setFile(droppedFile);
-            // Don't auto-scan yet, ensure target is selected
-        }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
+        try {
+            const res = await fetch('/api/parse-resume', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.text) {
+                setResumeText(data.text);
+            } else {
+                alert("Could not extract text from file.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Failed to upload/parse file.");
+        } finally {
+            setIsUploading(false);
         }
     };
 
     const handleStartScan = () => {
-        if (!file || !selectedCompany || !selectedRole) return;
+        if (!resumeText.trim() || !selectedCompany || !selectedRole) return;
 
         setStatus('scanning');
         setScanProgress(0);
@@ -197,52 +196,41 @@ export default function ResumeScannerPage() {
         const companyData = COMPANIES_DB[selectedCompany];
         // @ts-ignore
         const roleData = companyData.roles[selectedRole];
+        const allKeywords = [...roleData.hardSkills, ...roleData.keywords];
 
+        // Simulate Scanning Progress with Real Analysis
         let currentProgress = 0;
         const interval = setInterval(() => {
             currentProgress += 1.5;
             setScanProgress(Math.min(currentProgress, 99));
-        }, 80);
+        }, 30);
 
         setTimeout(() => {
             clearInterval(interval);
             setScanProgress(100);
 
-            // Generate Mock Results
-            const randomScore = Math.floor(Math.random() * (90 - 45) + 45); // 45-90 range
+            // RUN REAL ANALYSIS
+            const result = analyzeResume(resumeText, companyData.name, allKeywords);
 
-            setResults({
-                score: randomScore,
-                matchRate: randomScore > 80 ? 'High' : randomScore > 60 ? 'Medium' : 'Low',
-                missingKeySkills: roleData.hardSkills.filter(() => Math.random() > 0.4),
-                missingSoftSkills: roleData.softSkills.filter(() => Math.random() > 0.5),
-                formattingIssues: Math.random() > 0.6 ? ['Date format inconsistency'] : [],
-                wordCount: 450,
-                targetCompany: companyData.name,
-                targetRole: roleData.title
+            setAnalysis({
+                result,
+                targetRoleTitle: roleData.title,
+                targetCompanyName: companyData.name,
+                keywordsList: allKeywords
             });
 
             setTimeout(() => setStatus('results'), 500);
-        }, 6000);
-    };
-
-    const resetScan = () => {
-        setStatus('idle');
-        setResults(null);
-        setScanProgress(0);
-        // Keep file and selection, or clear? Let's clear result-dependent things but maybe keep file
-        // To be safe, clear "Results" state but keep selection state so they can re-scan easily if they want, 
-        // or they can change selection.
+        }, 2000);
     };
 
     const fullReset = () => {
-        setFile(null);
+        setResumeText('');
         setStatus('idle');
-        setResults(null);
+        setAnalysis(null);
         setSelectedCompany(null);
         setSelectedRole(null);
         setScanProgress(0);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+        setActiveTab('overview');
     }
 
     // Helper to get current role data safely
@@ -257,22 +245,22 @@ export default function ResumeScannerPage() {
     const roleData = getCurrentRoleData();
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background text-foreground">
             <div className="container mx-auto px-6 py-12 max-w-6xl">
 
                 {/* Header Section */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4 text-foreground">
-                        AI Resume Scanner
+                    <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">
+                        AI Resume Coach (<span className='text-primary'>Beta</span>)
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Simulate an ATS scan against FAANG hiring criteria or general industry standards.
+                        We've reverse-engineered the ATS algorithms of 70+ top companies.
+                        Get specific, actionable advice to 5x your interview chances.
                     </p>
                 </div>
 
                 {status === 'idle' && (
                     <div className="max-w-5xl mx-auto grid md:grid-cols-12 gap-8 items-start">
-
                         {/* 1. Configuration Panel */}
                         <div className="md:col-span-5 bg-background border border-border rounded-xl p-6 space-y-6 shadow-sm">
                             <div>
@@ -280,10 +268,6 @@ export default function ResumeScannerPage() {
                                     <Target className="w-5 h-5 text-primary" />
                                     1. Select Target
                                 </h3>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    Choose the company to load their specific ATS keywords.
-                                </p>
-
                                 <div className="grid grid-cols-2 gap-3 mb-6">
                                     {Object.entries(COMPANIES_DB).map(([key, data]) => (
                                         <button
@@ -335,78 +319,66 @@ export default function ResumeScannerPage() {
                             </div>
                         </div>
 
-                        {/* 2. Upload Area */}
+                        {/* 2. Input Area */}
                         <div className="md:col-span-7 flex flex-col h-full">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className={cn(
-                                    "flex-1 relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 flex flex-col justify-center items-center bg-muted/10",
-                                    isDragging
-                                        ? "border-primary bg-primary/5 scale-[1.02]"
-                                        : "border-muted-foreground/30 hover:border-primary/50"
-                                )}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    className="hidden"
-                                    accept=".pdf,.png,.jpg,.jpeg"
-                                    onChange={handleFileSelect}
-                                />
-                                {file ? (
-                                    <div className="animate-in zoom-in-50 duration-300">
-                                        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto text-primary">
-                                            <FileText className="w-10 h-10" />
-                                        </div>
-                                        <h3 className="text-xl font-semibold mb-1">{file.name}</h3>
-                                        <p className="text-sm text-muted-foreground mb-6">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                                            className="text-sm text-red-500 hover:text-red-600 font-medium"
-                                        >
-                                            Remove File
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mb-6">
-                                            <Upload className="w-10 h-10 text-muted-foreground" />
-                                        </div>
-                                        <h3 className="text-2xl font-semibold mb-2">Upload Resume</h3>
-                                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                                            Drag & drop your PDF here.
-                                        </p>
-                                        <button className="px-8 py-3 bg-muted text-foreground border border-input font-medium rounded-lg hover:bg-muted/80 transition-colors">
-                                            Select File
-                                        </button>
-                                    </>
-                                )}
-                            </motion.div>
+                            <div className="bg-background border border-border rounded-xl p-6 shadow-sm h-full flex flex-col">
+                                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                                    <FileText className="w-5 h-5 text-primary" />
+                                    2. Upload or Paste Resume
+                                </h3>
 
-                            <div className="mt-6">
-                                <button
-                                    onClick={handleStartScan}
-                                    disabled={!file || !selectedCompany || !selectedRole}
-                                    className={cn(
-                                        "w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3",
-                                        (!file || !selectedCompany || !selectedRole)
-                                            ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
-                                            : "bg-primary text-primary-foreground hover:opacity-90 shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0"
-                                    )}
-                                >
-                                    <Sparkles className="w-5 h-5" />
-                                    Run ATS Simulator
-                                </button>
-                                {(!selectedCompany || !selectedRole) && file && (
-                                    <p className="text-center text-sm text-red-500 mt-3 animate-pulse">
-                                        Please select a target company and role above.
-                                    </p>
-                                )}
+                                <div className="mb-4">
+                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                            {isUploading ? (
+                                                <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
+                                            ) : (
+                                                <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                                            )}
+                                            <p className="text-sm text-muted-foreground">
+                                                <span className="font-semibold">Click to upload</span> or drag and drop
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">PDF, DOCX, TXT</p>
+                                        </div>
+                                        <input type="file" className="hidden" accept=".pdf,.docx,.txt" onChange={handleFileUpload} />
+                                    </label>
+                                </div>
+
+                                <div className="relative flex items-center py-2 mb-4">
+                                    <div className="flex-grow border-t border-border"></div>
+                                    <span className="flex-shrink-0 mx-4 text-xs text-muted-foreground uppercase">Or paste text</span>
+                                    <div className="flex-grow border-t border-border"></div>
+                                </div>
+
+                                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                                    <FileText className="w-5 h-5 text-primary" />
+                                    3. Verify Content
+                                </h3>
+
+                                <div className="flex-1 min-h-[300px]">
+                                    <textarea
+                                        value={resumeText}
+                                        onChange={(e) => setResumeText(e.target.value)}
+                                        placeholder="Paste your full resume text here (Ctrl+A, Ctrl+C from your PDF)..."
+                                        className="w-full h-full p-4 rounded-lg border border-input bg-muted/20 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm font-mono leading-relaxed"
+                                    />
+                                </div>
+
+                                <div className="mt-6">
+                                    <button
+                                        onClick={handleStartScan}
+                                        disabled={!resumeText.trim() || !selectedCompany || !selectedRole}
+                                        className={cn(
+                                            "w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3",
+                                            (!resumeText.trim() || !selectedCompany || !selectedRole)
+                                                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                                : "bg-primary text-primary-foreground hover:opacity-90 shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0"
+                                        )}
+                                    >
+                                        <Sparkles className="w-5 h-5" />
+                                        Analyze Match
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -430,28 +402,12 @@ export default function ResumeScannerPage() {
                                 <span className="text-xl font-bold font-mono">{Math.round(scanProgress)}%</span>
                             </div>
                         </div>
-
-                        <h3 className="text-2xl font-bold mb-2">Analyzing against {COMPANIES_DB[selectedCompany!].name}...</h3>
-                        <p className="text-muted-foreground mb-8">Comparing skills for <strong>{roleData.title}</strong> role</p>
-
-                        <div className="text-sm text-left max-w-xs mx-auto space-y-2 font-mono text-muted-foreground bg-muted p-4 rounded-lg">
-                            <div className={cn("flex items-center gap-2", scanProgress > 10 ? "text-green-500" : "opacity-50")}>
-                                {scanProgress > 10 ? <Check className="w-3 h-3" /> : <Loader2 className="w-3 h-3 animate-spin" />}
-                                Parsing layout structure
-                            </div>
-                            <div className={cn("flex items-center gap-2", scanProgress > 40 ? "text-green-500" : "opacity-50")}>
-                                {scanProgress > 40 ? <Check className="w-3 h-3" /> : <Loader2 className="w-3 h-3 animate-spin" />}
-                                Identifying hard skills
-                            </div>
-                            <div className={cn("flex items-center gap-2", scanProgress > 70 ? "text-green-500" : "opacity-50")}>
-                                {scanProgress > 70 ? <Check className="w-3 h-3" /> : <Loader2 className="w-3 h-3 animate-spin" />}
-                                Checking for "{roleData.keywords[0]}"
-                            </div>
-                        </div>
+                        <h3 className="text-2xl font-bold mb-2">Analyzing against {COMPANIES_DB[selectedCompany!].name} ATS...</h3>
+                        <p className="text-muted-foreground mb-8">Checking algorithms for <strong>{roleData.title}</strong> role</p>
                     </div>
                 )}
 
-                {status === 'results' && results && roleData && (
+                {status === 'results' && analysis?.result && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
                         {/* Navigation Back */}
                         <div className="flex justify-start">
@@ -467,7 +423,6 @@ export default function ResumeScannerPage() {
                         {/* Top Summary Card */}
                         <div className="bg-background border border-border rounded-xl p-8 shadow-sm">
                             <div className="flex flex-col md:flex-row items-center gap-8">
-                                {/* Score Circle */}
                                 <div className="relative w-40 h-40 flex-shrink-0">
                                     <svg className="w-full h-full transform -rotate-90">
                                         <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-muted/20" />
@@ -476,34 +431,32 @@ export default function ResumeScannerPage() {
                                             stroke="currentColor" strokeWidth="12"
                                             fill="transparent"
                                             strokeDasharray={439.8}
-                                            strokeDashoffset={439.8 - (439.8 * results.score) / 100}
+                                            strokeDashoffset={439.8 - (439.8 * analysis.result.score) / 100}
                                             className={cn(
-                                                results.score > 75 ? "text-green-500" : results.score > 50 ? "text-yellow-500" : "text-red-500"
+                                                analysis.result.score > 75 ? "text-green-500" : analysis.result.score > 50 ? "text-yellow-500" : "text-red-500"
                                             )}
                                         />
                                     </svg>
                                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                        <span className="text-5xl font-bold">{results.score}</span>
+                                        <span className="text-5xl font-bold">{analysis.result.score}</span>
                                         <span className="text-sm text-muted-foreground text-center mt-1">Match Rate</span>
                                     </div>
                                 </div>
-
                                 <div className="flex-1 text-center md:text-left">
-                                    <h2 className="text-2xl font-bold mb-2">
-                                        {results.score > 75 ? "Great Match!" : "Needs Improvement"}
+                                    <h2 className="text-3xl font-bold mb-2">
+                                        {analysis.result.score > 75 ? "Strong Candidate" : "Needs Improvement"}
                                     </h2>
                                     <p className="text-muted-foreground mb-4 max-w-xl">
-                                        Your resume hits {results.score}% of the key signals for the <strong>{results.targetRole}</strong> role at <strong>{results.targetCompany}</strong>.
+                                        Your resume hits {analysis.result.foundKeywords.length}/{analysis.keywordsList.length} required signals for
+                                        the <strong>{analysis.targetRoleTitle}</strong> role.
                                     </p>
-                                    <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
-                                            <Building2 className="w-4 h-4 text-primary" />
-                                            <span>{results.targetCompany}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
-                                            <Target className="w-4 h-4 text-primary" />
-                                            <span>{roleData.keywords[0]} Focus</span>
-                                        </div>
+                                    {/* Action Recommendations Summary */}
+                                    <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                                        {analysis.result.recommendations.slice(0, 2).map((rec, i) => (
+                                            <span key={i} className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full border border-blue-200 dark:border-blue-800">
+                                                <Sparkles className="w-3 h-3" /> {rec.type}: {rec.text.substring(0, 40)}...
+                                            </span>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -512,69 +465,68 @@ export default function ResumeScannerPage() {
                         {/* Detailed Tabs */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-1 border-b border-border overflow-x-auto">
-                                <button
-                                    onClick={() => setActiveTab('overview')}
-                                    className={cn(
-                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
-                                        activeTab === 'overview' ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-                                    )}
-                                >
-                                    Overview
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('skills')}
-                                    className={cn(
-                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
-                                        activeTab === 'skills' ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-                                    )}
-                                >
-                                    Skills Gap ({results.missingKeySkills.length})
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('ats')}
-                                    className={cn(
-                                        "px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
-                                        activeTab === 'ats' ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-                                    )}
-                                >
-                                    ATS Checks
-                                </button>
+                                {[
+                                    { id: 'overview', label: 'Overview' },
+                                    { id: 'projects', label: `Projects (${analysis.result.projects.length})` },
+                                    { id: 'experience', label: `Experience (${analysis.result.experience.length})` },
+                                    { id: 'tech', label: 'Tech Stack' },
+                                    { id: 'recs', label: 'Action Plan', icon: Sparkles }
+                                ].map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id as any)}
+                                        className={cn(
+                                            "flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                                            activeTab === tab.id ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                                        )}
+                                    >
+                                        {tab.icon && <tab.icon className="w-4 h-4" />}
+                                        {tab.label}
+                                    </button>
+                                ))}
                             </div>
 
+                            {/* --- TAB CONTENT --- */}
+
+                            {/* OVERVIEW TAB */}
                             {activeTab === 'overview' && (
                                 <div className="grid md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-4 duration-500">
                                     <div className="bg-background border border-border rounded-xl p-6">
                                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                                             <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                            Matched Signals
+                                            Key Strengths
                                         </h3>
                                         <ul className="space-y-3">
-                                            <li className="flex items-start gap-3">
-                                                <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    <Check className="w-3.5 h-3.5 text-green-600" />
-                                                </div>
-                                                <span className="text-sm text-muted-foreground">Found <strong>{roleData.hardSkills.length - results.missingKeySkills.length}/{roleData.hardSkills.length}</strong> required tech stack keywords.</span>
-                                            </li>
-                                            <li className="flex items-start gap-3">
-                                                <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    <Check className="w-3.5 h-3.5 text-green-600" />
-                                                </div>
-                                                <span className="text-sm text-muted-foreground">Aligned with {results.targetCompany}'s values (e.g. "{roleData.softSkills[0]}").</span>
-                                            </li>
+                                            {analysis.result.foundKeywords.length > 5 ? (
+                                                <li className="flex items-start gap-3">
+                                                    <Check className="w-4 h-4 text-green-500 mt-1" />
+                                                    <span className="text-sm">Strong keyword coverage ({analysis.result.foundKeywords.length} found).</span>
+                                                </li>
+                                            ) : null}
+                                            {analysis.result.formattingScore > 90 && (
+                                                <li className="flex items-start gap-3">
+                                                    <Check className="w-4 h-4 text-green-500 mt-1" />
+                                                    <span className="text-sm">Clean, standard formatting detected.</span>
+                                                </li>
+                                            )}
+                                            {analysis.result.projects.length > 0 && (
+                                                <li className="flex items-start gap-3">
+                                                    <Check className="w-4 h-4 text-green-500 mt-1" />
+                                                    <span className="text-sm">Projects section parsed successfully.</span>
+                                                </li>
+                                            )}
                                         </ul>
                                     </div>
                                     <div className="bg-background border border-border rounded-xl p-6">
                                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                                             <AlertTriangle className="w-5 h-5 text-red-500" />
-                                            Missing Critical Keywords
+                                            Critical Gaps
                                         </h3>
                                         <ul className="space-y-3">
-                                            {results.missingKeySkills.slice(0, 3).map(skill => (
-                                                <li key={skill} className="flex items-start gap-3">
-                                                    <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                        <X className="w-3.5 h-3.5 text-red-600" />
-                                                    </div>
-                                                    <span className="text-sm text-muted-foreground">Missing: <strong className="text-foreground">{skill}</strong>.</span>
+                                            {analysis.result.recommendations.filter(r => r.type === 'Critical').slice(0, 3).map((rec, i) => (
+                                                <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                                                    <X className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
+                                                    <span>{rec.text}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -582,61 +534,152 @@ export default function ResumeScannerPage() {
                                 </div>
                             )}
 
-                            {activeTab === 'skills' && (
-                                <div className="bg-background border border-border rounded-xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
-                                    <div className="grid grid-cols-12 bg-muted/50 p-4 border-b border-border text-sm font-medium text-muted-foreground">
-                                        <div className="col-span-5">Skill</div>
-                                        <div className="col-span-3 text-center">Relevance</div>
-                                        <div className="col-span-3 text-center">Status</div>
-                                        <div className="col-span-1"></div>
-                                    </div>
-                                    <div className="divide-y divide-border">
-                                        {/* Hard Skills */}
-                                        {roleData.hardSkills.map((skill: string) => {
-                                            const isMissing = results.missingKeySkills.includes(skill);
-                                            return (
-                                                <div key={skill} className="grid grid-cols-12 p-4 text-sm items-center hover:bg-muted/30">
-                                                    <div className="col-span-5 font-medium">{skill}</div>
-                                                    <div className="col-span-3 text-center">High</div>
-                                                    <div className="col-span-3 text-center">
-                                                        {isMissing ? (
-                                                            <span className="text-red-500 text-xs bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">Missing</span>
-                                                        ) : (
-                                                            <span className="text-green-500 text-xs bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded">Found</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="col-span-1">
-                                                        {isMissing ? <X className="w-4 h-4 text-red-500" /> : <Check className="w-4 h-4 text-green-500" />}
+                            {/* PROJECTS TAB */}
+                            {activeTab === 'projects' && (
+                                <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                                    {analysis.result.projects.length === 0 ? (
+                                        <div className="text-center p-12 border border-dashed border-border rounded-xl">
+                                            <p className="text-muted-foreground">No specific "Projects" section detected. This is a red flag for tech roles.</p>
+                                        </div>
+                                    ) : (
+                                        analysis.result.projects.map((proj, i) => (
+                                            <div key={i} className="group bg-card border border-border rounded-xl p-6 hover:shadow-md transition-all">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div>
+                                                        <h3 className="font-bold text-lg">{proj.title}</h3>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                            {proj.tech.map((t, idx) => (
+                                                                <span key={idx} className="px-2 py-0.5 bg-muted rounded text-xs font-mono">{t}</span>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
+                                                <p className="text-sm text-muted-foreground mb-4 italic pl-4 border-l-2 border-primary/20">
+                                                    "{proj.description}"
+                                                </p>
+                                                {proj.rewriteSuggestion && (
+                                                    <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 p-4 rounded-lg">
+                                                        <div className="flex items-center gap-2 mb-2 text-blue-700 dark:text-blue-300 font-semibold text-xs uppercase tracking-wide">
+                                                            <Sparkles className="w-3 h-3" /> AI Rewrite Suggestion
+                                                        </div>
+                                                        <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                                            {proj.rewriteSuggestion}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             )}
 
-                            {activeTab === 'ats' && (
-                                <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
-                                    {[
-                                        { label: "File Format", status: "pass", desc: "PDF is preferred. OCR readable." },
-                                        { label: "Searchable Text", status: "pass", desc: "Text is selectable and not flattened." },
-                                        { label: "Section Headings", status: "pass", desc: "Standard headers (Education, Experience) found." },
-                                        { label: "Date Formatting", status: "warn", desc: "Use 'Month Year' format consistently (e.g., Nov 2023)." },
-                                        { label: "Contact Info", status: "pass", desc: "Email and Phone found." }
-                                    ].map((check, i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 border border-border rounded-xl bg-background">
+                            {/* EXPERIENCE TAB */}
+                            {activeTab === 'experience' && (
+                                <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                                    {analysis.result.experience.length === 0 ? (
+                                        <div className="text-center p-12 border border-dashed border-border rounded-xl">
+                                            <p className="text-muted-foreground">No "Experience" section parsed. Check your headers.</p>
+                                        </div>
+                                    ) : (
+                                        analysis.result.experience.map((exp, i) => (
+                                            <div key={i} className="bg-card border border-border rounded-xl p-6 relative overflow-hidden">
+                                                {exp.gapAlert && (
+                                                    <div className="absolute top-0 right-0 p-2 bg-red-100 dark:bg-red-900/30 text-red-600 text-xs font-bold rounded-bl-xl">
+                                                        Impact Gap Detected
+                                                    </div>
+                                                )}
+                                                <div className="mb-4">
+                                                    <h3 className="font-bold text-lg">{exp.role}</h3>
+                                                    <p className="text-muted-foreground pointer-events-none">{exp.company} • {exp.duration}</p>
+                                                </div>
+                                                {exp.gapAlert ? (
+                                                    <div className="flex items-start gap-4 p-4 bg-muted rounded-lg">
+                                                        <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                                                        <div>
+                                                            <p className="text-sm font-medium mb-1">Missing Quantifiable Metrics</p>
+                                                            <p className="text-xs text-muted-foreground">{exp.gapAlert}</p>
+                                                            <p className="text-xs text-foreground font-semibold mt-2">Try adding: "Engineered scalable API reducing latency by 40%..."</p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-green-600 flex items-center gap-2">
+                                                        <CheckCircle2 className="w-4 h-4" /> Good use of impact metrics.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            {/* TECH STACK TAB */}
+                            {activeTab === 'tech' && (
+                                <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="bg-card p-6 border border-border rounded-xl">
+                                            <h3 className="font-semibold mb-4 text-green-600">✅ Proficient / Found</h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {analysis.result.techStack.proficient.concat(analysis.result.techStack.familiar).length > 0 ? (
+                                                    analysis.result.techStack.proficient.concat(analysis.result.techStack.familiar).map(t => (
+                                                        <span key={t} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded border border-green-200 dark:border-green-800 text-sm">
+                                                            {t}
+                                                        </span>
+                                                    ))
+                                                ) : <span className="text-muted-foreground text-sm">No tech stack keywords detected.</span>}
+                                            </div>
+                                        </div>
+                                        <div className="bg-card p-6 border border-border rounded-xl">
+                                            <h3 className="font-semibold mb-4 text-red-500">❌ Missing / Critical</h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {analysis.result.techStack.missing.map(t => (
+                                                    <span key={t} className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded border border-red-200 dark:border-red-800 text-sm">
+                                                        {t}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {!analysis.result.education.found && (
+                                        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-center gap-3">
+                                            <AlertTriangle className="w-5 h-5 text-yellow-600" />
                                             <div>
-                                                <h4 className="font-medium">{check.label}</h4>
-                                                <p className="text-sm text-muted-foreground">{check.desc}</p>
+                                                <p className="text-sm font-bold text-yellow-800 dark:text-yellow-200">Education Section Missing</p>
+                                                <p className="text-xs text-yellow-700 dark:text-yellow-300">Even for senior roles, ATS parsers often require a degree field.</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* RECOMMENDATIONS TAB */}
+                            {activeTab === 'recs' && (
+                                <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
+                                    <h3 className="text-xl font-bold mb-4">Prioritized Action Plan</h3>
+                                    {analysis.result.recommendations.map((rec, i) => (
+                                        <div key={i} className="flex gap-4 p-4 border border-border rounded-xl bg-card hover:bg-muted/50 transition-colors">
+                                            <div className={cn(
+                                                "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-lg",
+                                                rec.type === 'Critical' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                                            )}>
+                                                {i + 1}
                                             </div>
                                             <div>
-                                                {check.status === 'pass' && <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 text-xs font-medium rounded-full border border-green-200 dark:border-green-900">Pass</span>}
-                                                {check.status === 'warn' && <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 text-xs font-medium rounded-full border border-yellow-200 dark:border-yellow-900">Warning</span>}
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className={cn(
+                                                        "px-2 py-0.5 text-[10px] uppercase font-bold rounded",
+                                                        rec.type === 'Critical' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                                                    )}>
+                                                        {rec.type}
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground">High Impact (+{rec.impact} pts)</span>
+                                                </div>
+                                                <p className="font-medium text-foreground">{rec.text}</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
+
                         </div>
                     </div>
                 )}

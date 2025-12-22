@@ -10,7 +10,8 @@ export type BlockType =
     | 'code'
     | 'image'
     | 'divider'
-    | 'comparison-card';
+    | 'comparison-card'
+    | 'verdict-card';
 
 export interface Block {
     id: string;
