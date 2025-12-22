@@ -91,21 +91,11 @@ export default function ComparisonResultPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="hidden md:flex gap-2"
-                            onClick={() => {
-                                // Toggle save logic here - assuming store handles persistence
-                                // In a real app we'd toggle a 'saved' flag on the doc
-                                alert('Comparisons are automatically saved to your history!');
-                            }}
-                        >
-                            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                            Auto-Saved
-                        </Button>
-                        <Link href="/" className="md:hidden">
-                            <Radar className="w-6 h-6" />
+                        <ReadLaterButton docId={docId} />
+                        <Link href="/dashboard">
+                            <Button variant="ghost" size="sm" className="gap-2 hidden md:flex">
+                                View Dashboard
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -138,5 +128,40 @@ export default function ComparisonResultPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Read Later Button Component
+function ReadLaterButton({ docId }: { docId: string }) {
+    const { readLater, addToReadLater, removeFromReadLater } = useUserStore();
+    const isSaved = readLater.includes(docId);
+
+    const handleToggle = () => {
+        if (isSaved) {
+            removeFromReadLater(docId);
+        } else {
+            addToReadLater(docId);
+        }
+    };
+
+    return (
+        <Button
+            variant={isSaved ? "default" : "outline"}
+            size="sm"
+            className="gap-2"
+            onClick={handleToggle}
+        >
+            {isSaved ? (
+                <>
+                    <BookmarkCheck className="w-4 h-4" />
+                    Saved
+                </>
+            ) : (
+                <>
+                    <Bookmark className="w-4 h-4" />
+                    Save to Read Later
+                </>
+            )}
+        </Button>
     );
 }

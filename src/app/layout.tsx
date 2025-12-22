@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning className="dark">
-            <body className={cn(
+            <body suppressHydrationWarning className={cn(
                 "min-h-screen bg-background font-sans antialiased",
                 inter.variable,
                 jakarta.variable
