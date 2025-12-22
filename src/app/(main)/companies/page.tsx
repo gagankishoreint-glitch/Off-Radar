@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { COMPANIES, Company, Major, Level, ALL_DOMAINS, ALL_ROLE_TYPES } from '@/lib/company-data';
 import { useUserStore } from '@/store/use-user-store';
-import { ChevronDown, ChevronUp, Bookmark, Star, MapPin, Building2, GraduationCap, Briefcase, Filter, X, Users, TrendingUp, Clock, Search, Heart } from 'lucide-react';
+import { ChevronDown, ChevronUp, Bookmark, Star, MapPin, Building2, GraduationCap, Briefcase, Filter, X, Users, TrendingUp, Clock, Search, Heart, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CompaniesPage() {
@@ -301,14 +301,17 @@ function CompanyCard({
     isWishlisted: boolean;
     onToggleWishlist: () => void;
 }) {
+    // Smart Apply Link Logic
+    const applyLink = company.careersUrl || `https://www.google.com/search?q=${encodeURIComponent(company.name + ' careers india')}`;
+
     return (
-        <Link href={`/companies/${company.id}`} className="block">
-            <div className="bg-card border border-border rounded-lg p-5 hover:border-foreground/20 hover:shadow-md transition-all cursor-pointer">
+        <div className="bg-card border border-border rounded-lg p-5 hover:border-foreground/20 hover:shadow-md transition-all">
+            <Link href={`/companies/${company.id}`} className="block mb-3">
                 {/* Compact Header */}
                 <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold text-foreground truncate">{company.name}</h3>
+                            <h3 className="text-lg font-bold text-foreground truncate hover:underline">{company.name}</h3>
                             {company.internFriendly && (
                                 <span className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 shrink-0">
                                     Intern
@@ -372,7 +375,10 @@ function CompanyCard({
                         </span>
                     ))}
                 </div>
+            </Link>
 
+            {/* Actions Row */}
+            <div className="flex items-center justify-between pt-3 border-t border-border">
                 {/* Expand Button */}
                 <button
                     onClick={(e) => { e.preventDefault(); onToggle(); }}
@@ -382,20 +388,32 @@ function CompanyCard({
                     {isExpanded ? 'Less' : 'Why join?'}
                 </button>
 
-                {/* Expanded Content */}
-                {isExpanded && company.whyJoin && (
-                    <div className="mt-3 pt-3 border-t border-border">
-                        <ul className="grid md:grid-cols-2 gap-1.5">
-                            {company.whyJoin.map((reason, i) => (
-                                <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                                    <span className="text-green-500 mt-0.5 text-[10px]">•</span>
-                                    {reason}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                {/* Apply Button */}
+                <a
+                    href={applyLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs font-medium bg-foreground text-background px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    Apply Now
+                    <ArrowUpRight className="w-3 h-3" />
+                </a>
             </div>
-        </Link>
+
+            {/* Expanded Content */}
+            {isExpanded && company.whyJoin && (
+                <div className="mt-3 pt-3 border-t border-border border-dashed">
+                    <ul className="grid md:grid-cols-2 gap-1.5">
+                        {company.whyJoin.map((reason, i) => (
+                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                                <span className="text-green-500 mt-0.5 text-[10px]">•</span>
+                                {reason}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
     );
 }

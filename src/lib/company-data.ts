@@ -54,6 +54,7 @@ export interface Company {
         maxStipend: number;
         duration?: string;
     };
+    careersUrl?: string; // e.g. "https://careers.google.com/jobs"
 }
 
 export const TIER_TOOLTIPS: Record<Tier, string> = {
@@ -108,7 +109,8 @@ const CS_TIER1: Company[] = [
                 "**Office Policy**: Strict 3 days/week in office mandate is being enforced via badge tracking."
             ],
             highlight: "Google is no longer the 'retirement home' for engineers. It's in wartime mode to fight OpenAI/Microsoft. Expect harder work but cutting-edge AI exposure."
-        }
+        },
+        careersUrl: 'https://www.google.com/about/careers/applications/jobs/results/?location=India'
     },
     {
         id: 'amazon',
@@ -125,6 +127,7 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Cloud, backend & systems. High scale engineering.',
         whyJoin: ['Bar Raiser Culture', 'Fast Promotion Velocity', 'Working on AWS Bedrock / Q'],
+        careersUrl: 'https://www.amazon.jobs/en/locations/india'
     },
     {
         id: 'microsoft',
@@ -141,6 +144,7 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Green', learning: 'High' },
         description: 'Enterprise software, cloud and AI.',
         whyJoin: ['Leading the AI Revolution (OpenAI)', 'Great WLB for Tier 1', 'ESOPs are liquid like cash'],
+        careersUrl: 'https://jobs.careers.microsoft.com/global/en/search?q=India'
     },
     {
         id: 'apple',
@@ -157,6 +161,7 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Consumer OS, silicon and systems teams.',
         whyJoin: ['Premium brand', 'Hardware-software integration', 'Top pay', 'Secretive but rewarding'],
+        careersUrl: 'https://www.apple.com/careers/in/'
     },
     {
         id: 'meta',
@@ -173,6 +178,7 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Social, ads and large-scale ML systems.',
         whyJoin: ['Highest base salaries', 'Fast-paced culture', 'Great for infra roles'],
+        careersUrl: 'https://www.metacareers.com/jobs/?location=India'
     },
     {
         id: 'netflix',
@@ -189,6 +195,7 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Streaming infra and data-intensive systems.',
         whyJoin: ['Highest paying globally', 'Keeper test culture', 'Ultra selective'],
+        careersUrl: 'https://jobs.netflix.com/search?location=Mumbai%2C%20India'
     },
     {
         id: 'stripe',

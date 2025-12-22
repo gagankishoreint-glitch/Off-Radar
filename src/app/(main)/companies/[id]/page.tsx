@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useUserStore } from '@/store/use-user-store';
 import { cn } from '@/lib/utils';
+import { ArrowUpRight } from 'lucide-react';
 
 export default function CompanyDetailPage() {
     const params = useParams();
@@ -24,6 +25,9 @@ export default function CompanyDetailPage() {
             </div>
         );
     }
+
+    const applyLink = company.careersUrl || `https://www.google.com/search?q=${encodeURIComponent(company.name + ' careers india')}`;
+
 
     const getWLBStyle = (wlb: string) => {
         switch (wlb) {
@@ -100,7 +104,17 @@ export default function CompanyDetailPage() {
                                 )}
                             </div>
 
-                            <p className="text-muted-foreground text-lg">{company.description}</p>
+                            <p className="text-muted-foreground text-lg mb-6">{company.description}</p>
+
+                            <a
+                                href={applyLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Button className="gap-2 text-base px-6">
+                                    Apply Now <ArrowUpRight className="w-4 h-4" />
+                                </Button>
+                            </a>
                         </div>
 
                         {/* Salary Card */}
@@ -319,12 +333,21 @@ export default function CompanyDetailPage() {
                 )}
 
                 {/* CTA */}
-                <div className="text-center">
+                <div className="text-center flex justify-center items-center gap-4">
                     <Link href="/companies">
-                        <Button variant="outline" className="mr-4">
+                        <Button variant="outline">
                             Browse More Companies
                         </Button>
                     </Link>
+                    <a
+                        href={applyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Button className="gap-2">
+                            Apply Now <ArrowUpRight className="w-4 h-4" />
+                        </Button>
+                    </a>
                 </div>
             </div>
         </div>
