@@ -34,7 +34,7 @@ export default function ComparePage() {
     return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
             <div className="mb-8 flex flex-col items-center gap-2">
-                <Link href="/" className="p-3 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 transition-colors">
+                <Link href="/" className="p-3 bg-foreground rounded-full text-background hover:bg-foreground/90 transition-colors">
                     <Radar className="w-8 h-8" />
                 </Link>
                 <h1 className="text-3xl font-bold">Off-Radar Comparison</h1>
@@ -107,7 +107,8 @@ export default function ComparePage() {
                 </div>
             </div>
 
-            <Button size="lg" className="mt-8 px-8 bg-indigo-600 hover:bg-indigo-700 text-white" onClick={handleRunAnalysis}>
+
+            <Button size="lg" className="mt-8 px-8 bg-foreground text-background hover:bg-foreground/90" onClick={handleRunAnalysis}>
                 Run Reality Check <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
         </div>

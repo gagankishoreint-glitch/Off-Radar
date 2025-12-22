@@ -7,9 +7,10 @@ import { CheckSquare, Square, ArrowRight, DollarSign } from 'lucide-react';
 interface ContentBlockProps {
     block: Block;
     documentId: string;
+    readOnly?: boolean;
 }
 
-export function ContentBlock({ block, documentId }: ContentBlockProps) {
+export function ContentBlock({ block, documentId, readOnly = false }: ContentBlockProps) {
     const updateBlock = useDocumentStore((state) => state.updateBlock);
     const addBlock = useDocumentStore((state) => state.addBlock);
     const deleteBlock = useDocumentStore((state) => state.deleteBlock);
@@ -236,10 +237,10 @@ export function ContentBlock({ block, documentId }: ContentBlockProps) {
         <Tag
             ref={contentRef as any}
             className={styles}
-            contentEditable
+            contentEditable={!readOnly}
             suppressContentEditableWarning
-            onKeyDown={handleKeyDown}
-            onInput={handleChange}
+            onKeyDown={!readOnly ? handleKeyDown : undefined}
+            onInput={!readOnly ? handleChange : undefined}
         >
             {block.content}
         </Tag>

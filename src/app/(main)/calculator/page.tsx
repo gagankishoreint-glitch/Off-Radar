@@ -32,21 +32,23 @@ export default function CalculatorPage() {
         const totalAnnual = ctc * 100000; // Convert LPA to absolute
         const annualBonus = (bonus && typeof bonus === 'number') ? bonus * 100000 : 0;
 
-        // Basic Logic:
-        // 1. Remove joining bonus/relocation from recurring monthly calculation base
-        // 2. Apply in-hand % to the remaining "recurring" component
-        // 3. Add back prorated bonus if needed, but usually in-hand % accounts for tax+pf deductions on the *total* package in student context.
-        // However, the `inHandPercent` in our data is typically "In-Hand / Total CTC".
+        // Correct Reality Logic:
+        // Monthly In-Hand comes from the RECURRING component, not the one-time bonus.
+        // So we subtract the bonus from the total CTC to get the base/recurring package.
 
-        // Let's use the company's specific data point if available, which is trusted.
-        // Formula: (CTC * inHandPercent) / 100
+        const recurringAnnual = Math.max(0, totalAnnual - annualBonus);
 
-        const annualInHand = totalAnnual * (estimatedInHandPercent / 100);
-        const monthlyInHand = annualInHand / 12;
+        // Calculate Monthly from Recurring
+        const annualInHandFromRecurring = recurringAnnual * (estimatedInHandPercent / 100);
+        const monthlyInHand = annualInHandFromRecurring / 12;
+
+        // Total Year 1 In Hand includes the taxed bonus (assuming flat 30% tax on bonus for simplicity/safety)
+        const bonusInHand = annualBonus * 0.7;
+        const totalAnnualInHand = annualInHandFromRecurring + bonusInHand;
 
         return {
             monthly: Math.round(monthlyInHand),
-            annual: Math.round(annualInHand),
+            annual: Math.round(totalAnnualInHand),
             percentage: estimatedInHandPercent,
             isEstimate: !selectedCompany
         };
@@ -162,8 +164,8 @@ export default function CalculatorPage() {
                                         <div className="flex justify-between text-sm">
                                             <span className="text-white/70">Reality Score</span>
                                             <span className={`font-bold px-2 py-0.5 rounded ${result.percentage > 85 ? 'bg-green-500/20 text-green-300' :
-                                                    result.percentage > 70 ? 'bg-yellow-500/20 text-yellow-300' :
-                                                        'bg-red-500/20 text-red-300'
+                                                result.percentage > 70 ? 'bg-yellow-500/20 text-yellow-300' :
+                                                    'bg-red-500/20 text-red-300'
                                                 }`}>
                                                 {result.percentage}%
                                             </span>
