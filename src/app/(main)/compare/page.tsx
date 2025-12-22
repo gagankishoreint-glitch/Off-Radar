@@ -37,8 +37,11 @@ export default function ComparePage() {
                 <Link href="/" className="p-3 bg-foreground rounded-full text-background hover:bg-foreground/90 transition-colors">
                     <Radar className="w-8 h-8" />
                 </Link>
-                <h1 className="text-3xl font-bold">Off-Radar Comparison</h1>
-                <p className="text-gray-500">Paste your offers. We will tell you the truth.</p>
+                <h1 className="text-3xl font-bold">Offer Comparison 2.0</h1>
+                <p className="text-gray-500 flex items-center gap-2">
+                    Paste your offers. We will tell you the truth.
+                    <span className="text-xs bg-muted px-2 py-0.5 rounded border border-border">Benchmarked to 2025</span>
+                </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 w-full max-w-4xl">

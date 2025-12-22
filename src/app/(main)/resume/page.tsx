@@ -2,11 +2,11 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Search, Sparkles, ArrowRight, Loader2, Download, Building2, Target, ChevronRight, Check, X, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Search, Sparkles, ArrowRight, Loader2, Download, Building2, Target, ChevronRight, Check, X, ArrowLeft, RefreshCw, Globe, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-// Expanded FAANG+ Database
+// Expanded FAANG+ Database + General Option
 const COMPANIES_DB = {
     'google': {
         name: 'Google',
@@ -113,6 +113,24 @@ const COMPANIES_DB = {
                 hardSkills: ['C#', '.NET', 'Azure', 'SQL', 'TypeScript', 'React'],
                 softSkills: ['Growth Mindset', 'One Microsoft', 'Diverse & Inclusive'],
                 keywords: ['Enterprise', 'Cloud', 'Productivity']
+            }
+        }
+    },
+    'general': {
+        name: 'General / Other',
+        icon: null,
+        roles: {
+            'swe-general': {
+                title: 'General Software Engineer',
+                hardSkills: ['Data Structures', 'Algorithms', 'System Design', 'Database Design', 'API Development', 'Git', 'Testing'],
+                softSkills: ['Problem Solving', 'Communication', 'Teamwork', 'Adaptability'],
+                keywords: ['Clean Code', 'Scalability', 'Maintainability', 'Agile']
+            },
+            'fullstack': {
+                title: 'Full Stack Developer',
+                hardSkills: ['Frontend (React/Vue)', 'Backend (Node/Python)', 'Databases (SQL/NoSQL)', 'REST APIs', 'DevOps basics'],
+                softSkills: ['End-to-End Ownership', 'User Focus'],
+                keywords: ['Responsive Design', 'API Integration', 'Deployment']
             }
         }
     }
@@ -248,7 +266,7 @@ export default function ResumeScannerPage() {
                         AI Resume Scanner
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Simulate an ATS scan against FAANG hiring criteria.
+                        Simulate an ATS scan against FAANG hiring criteria or general industry standards.
                     </p>
                 </div>
 
@@ -278,8 +296,12 @@ export default function ResumeScannerPage() {
                                                     : "border-border"
                                             )}
                                         >
-                                            <img src={data.icon} alt={data.name} className="w-8 h-8 object-contain" />
-                                            <span className="font-medium text-sm">{data.name}</span>
+                                            {data.icon ? (
+                                                <img src={data.icon} alt={data.name} className="w-8 h-8 object-contain" />
+                                            ) : (
+                                                <Globe className="w-8 h-8 text-muted-foreground" />
+                                            )}
+                                            <span className="font-medium text-sm text-center">{data.name}</span>
                                         </button>
                                     ))}
                                 </div>

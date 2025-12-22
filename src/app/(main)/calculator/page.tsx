@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { COMPANIES, Company } from '@/lib/company-data';
-import { Calculator, DollarSign, Building2, Info, TrendingDown, ArrowRight } from 'lucide-react';
+import { Calculator, DollarSign, Building2, Info, TrendingDown, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CalculatorPage() {
@@ -61,12 +61,15 @@ export default function CalculatorPage() {
             <div className="container mx-auto px-6 md:px-12 py-12 max-w-4xl">
 
                 <div className="text-center mb-12">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-xs font-medium mb-4 border border-green-500/20">
+                        <Check className="w-3 h-3" /> Updated for 2025-26 Tax Regime
+                    </div>
                     <h1 className="text-4xl font-heading font-bold mb-4 flex items-center justify-center gap-3 text-foreground">
                         <Calculator className="w-8 h-8" />
                         CTC Reality Calculator
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        Convert misleading CTC figures into real monthly in-hand salary using our database of company compensation structures.
+                        Convert misleading CTC figures into real monthly in-hand salary using our 2025 compensation database.
                     </p>
                 </div>
 

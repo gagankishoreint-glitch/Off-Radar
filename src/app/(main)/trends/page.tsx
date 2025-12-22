@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, DollarSign, Briefcase, LogIn, ArrowUpRight, ArrowDownRight, Users, BookOpen, Code2 } from 'lucide-react';
+import { TrendingUp, DollarSign, Briefcase, LogIn, ArrowUpRight, ArrowDownRight, Users, BookOpen, Code2, BrainCircuit, Cpu } from 'lucide-react';
 import { useUserStore } from '@/store/use-user-store';
 import Link from 'next/link';
 
@@ -22,10 +22,10 @@ export default function TrendsPage() {
                             Last Updated: {currentDate}
                         </div>
                         <h1 className="text-4xl font-heading font-bold mb-3 flex items-center gap-3">
-                            <TrendingUp className="text-primary" /> Market Trends 2025
+                            <TrendingUp className="text-primary" /> Market Trends 2025: <span className="text-primary italic">The Agentic Era</span>
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl">
-                            Real salary data and hiring trends. Powered by <a href="https://www.levels.fyi/2025/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Levels.fyi</a> and industry research.
+                            Real-time hiring signals. Moving beyond "AI Hype" to <strong>Reasoning Models, LLM Ops, and Agentic Workflows</strong>.
                         </p>
                     </div>
 
@@ -53,32 +53,32 @@ export default function TrendsPage() {
                 <div className="grid md:grid-cols-3 gap-6 mb-16">
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
                         <div className="flex items-center gap-2 mb-2 text-muted-foreground text-sm font-medium">
-                            <DollarSign className="w-4 h-4" /> Median Total Comp (India)
+                            <DollarSign className="w-4 h-4" /> Median SWE Comp (India)
                         </div>
-                        <div className="text-3xl font-heading font-bold text-foreground">₹18-45L</div>
+                        <div className="text-3xl font-heading font-bold text-foreground">₹22-55L</div>
                         <div className="text-green-500 text-sm mt-1 flex items-center gap-1">
-                            <ArrowUpRight className="w-4 h-4" /> Entry to Senior SWE
+                            <ArrowUpRight className="w-4 h-4" /> Adjusted for Senior/Staff
                         </div>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
                         <div className="flex items-center gap-2 mb-2 text-muted-foreground text-sm font-medium">
-                            <Briefcase className="w-4 h-4" /> Top Paying Role 2025
+                            <BrainCircuit className="w-4 h-4" /> Top Paying Skill
                         </div>
-                        <div className="text-3xl font-heading font-bold text-foreground">ML Engineer</div>
-                        <div className="text-muted-foreground text-sm mt-1">Up to ₹60L at top firms</div>
+                        <div className="text-3xl font-heading font-bold text-foreground">AI Agents / RAG</div>
+                        <div className="text-muted-foreground text-sm mt-1">Founders Office & Core AI</div>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
                         <div className="flex items-center gap-2 mb-2 text-muted-foreground text-sm font-medium">
                             <Users className="w-4 h-4" /> Hiring Trend
                         </div>
-                        <div className="text-3xl font-heading font-bold text-foreground">Remote-First ↑</div>
-                        <div className="text-muted-foreground text-sm mt-1">Borderless hiring accelerating</div>
+                        <div className="text-3xl font-heading font-bold text-foreground">Full Stack ++</div>
+                        <div className="text-muted-foreground text-sm mt-1">"One person, end-to-end"</div>
                     </div>
                 </div>
 
                 {/* Industry Research Section */}
                 <h2 className="text-2xl font-heading font-bold mb-8 flex items-center gap-2">
-                    <BookOpen className="w-6 h-6 text-primary" /> Backed by Industry Research
+                    <BookOpen className="w-6 h-6 text-primary" /> Deep Dives: 2025 Outlook
                 </h2>
 
                 <div className="grid gap-8 mb-16">
@@ -86,25 +86,25 @@ export default function TrendsPage() {
                     <div className="bg-card rounded-xl border border-border overflow-hidden">
                         <div className="p-6 border-b border-border bg-muted/30">
                             <h3 className="text-xl font-bold flex items-center gap-2">
-                                📘 McKinsey Global Institute
-                                <span className="text-sm font-normal text-muted-foreground ml-auto bg-background px-3 py-1 rounded-full border border-border">The Future of Work</span>
+                                📘 State of AI Report 2025
+                                <span className="text-sm font-normal text-muted-foreground ml-auto bg-background px-3 py-1 rounded-full border border-border">Latest</span>
                             </h3>
                         </div>
                         <div className="p-6 grid md:grid-cols-2 gap-8">
                             <div>
-                                <h4 className="font-semibold mb-3 text-primary">Key Insights</h4>
+                                <h4 className="font-semibold mb-3 text-primary">Shift to "Reasoning Models"</h4>
                                 <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                                    <li>Up to <strong className="text-foreground">30%</strong> of current work activities automated by 2030.</li>
-                                    <li>Demand shift: Software Engineers, Data Engineers, Platform Engineers.</li>
-                                    <li><strong className="text-foreground">Skill depth &gt; Role title</strong> is the new norm.</li>
+                                    <li>Hiring is shifting from "Prompt Engineering" to <strong className="text-foreground">Model Orchestration</strong>.</li>
+                                    <li>Rise of <strong className="text-foreground">"AI Engineers"</strong> who sit between Research and Product.</li>
+                                    <li>Traditional CRUD apps being replaced by Agentic Interfaces.</li>
                                 </ul>
                             </div>
                             <div className="bg-muted/50 p-4 rounded-lg flex flex-col justify-center">
                                 <blockquote className="italic text-muted-foreground border-l-4 border-primary pl-4 mb-3">
-                                    "AI will not eliminate engineering roles — it will eliminate shallow skillsets."
+                                    "The value capture is moving from model training to Agentic System Design."
                                 </blockquote>
                                 <div className="flex flex-wrap gap-2 mt-auto">
-                                    {['AI', 'Automation', 'System Design', 'Reskilling'].map(tag => (
+                                    {['DeepSeek', 'o1/Reasoning', 'LangGraph', 'Evaluations'].map(tag => (
                                         <span key={tag} className="text-xs bg-background px-2 py-1 rounded border border-border text-muted-foreground">{tag}</span>
                                     ))}
                                 </div>
@@ -117,57 +117,48 @@ export default function TrendsPage() {
                         {/* WEF */}
                         <div className="bg-card p-6 rounded-xl border border-border flex flex-col">
                             <div className="mb-4">
-                                <h3 className="text-lg font-bold mb-1">2️⃣ World Economic Forum</h3>
-                                <p className="text-sm text-muted-foreground">Future of Jobs Report 2024</p>
+                                <h3 className="text-lg font-bold mb-1">2️⃣ The "Junior" Crisis</h3>
+                                <p className="text-sm text-muted-foreground">Market correction for Entry Level</p>
                             </div>
 
                             <div className="flex-1 space-y-4">
                                 <div>
-                                    <div className="text-sm font-semibold mb-2">Fastest Growing Roles</div>
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className="text-xs font-medium bg-green-500/10 text-green-600 px-2 py-1 rounded">Software Devs</span>
-                                        <span className="text-xs font-medium bg-green-500/10 text-green-600 px-2 py-1 rounded">Data Engineers</span>
-                                        <span className="text-xs font-medium bg-green-500/10 text-green-600 px-2 py-1 rounded">Cybersecurity</span>
-                                    </div>
+                                    <div className="text-sm font-semibold mb-2">What's Happening?</div>
+                                    <p className="text-sm text-muted-foreground">
+                                        Coding assistants (Cursor, Windsurf) have raised the bar. Juniors are expected to output at Senior velocity.
+                                    </p>
                                 </div>
                                 <div>
-                                    <div className="text-sm font-semibold mb-2">Declining</div>
+                                    <div className="text-sm font-semibold mb-2">Survival Guide</div>
                                     <div className="flex flex-wrap gap-2">
-                                        <span className="text-xs font-medium bg-red-500/10 text-red-600 px-2 py-1 rounded">Clerical Roles</span>
-                                        <span className="text-xs font-medium bg-red-500/10 text-red-600 px-2 py-1 rounded">Repetitive Tasks</span>
+                                        <span className="text-xs font-medium bg-green-500/10 text-green-600 px-2 py-1 rounded">Build End-to-End</span>
+                                        <span className="text-xs font-medium bg-green-500/10 text-green-600 px-2 py-1 rounded">System Design</span>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-border text-sm italic text-muted-foreground">
-                                "Analytical thinking remains the #1 skill employers seek globally."
                             </div>
                         </div>
 
                         {/* NASSCOM */}
                         <div className="bg-card p-6 rounded-xl border border-border flex flex-col">
                             <div className="mb-4">
-                                <h3 className="text-lg font-bold mb-1">🇮🇳 NASSCOM India Outlook</h3>
-                                <p className="text-sm text-muted-foreground">India Tech Industry Data</p>
+                                <h3 className="text-lg font-bold mb-1">🇮🇳 India Market Update</h3>
+                                <p className="text-sm text-muted-foreground">GCCs & Startups Leading</p>
                             </div>
 
                             <div className="flex-1 space-y-4">
                                 <ul className="space-y-2 text-sm text-muted-foreground">
                                     <li className="flex items-start gap-2">
                                         <span className="text-green-500 mt-0.5">•</span>
-                                        <span>IT hiring stabilizing after 2023 slowdown.</span>
+                                        <span>**GCCs (Global Capability Centers)** are hiring aggressively (JPMC, Wells Fargo, Target).</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-green-500 mt-0.5">•</span>
-                                        <span>Growth in AI Services, Semi-conductors, & Cloud.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-green-500 mt-0.5">•</span>
-                                        <span>Increased off-campus hiring for Tier-2/3 colleges.</span>
+                                        <span>Startup equity aligns with 2025 IPO booms (Swiggy, etc).</span>
                                     </li>
                                 </ul>
                             </div>
                             <div className="mt-4 pt-4 border-t border-border text-sm font-medium text-primary">
-                                “India’s tech demand is shifting from services to deep-tech.”
+                                “Bangalore and Hyderabad remain top hubs for AI talent.”
                             </div>
                         </div>
                     </div>
@@ -176,39 +167,36 @@ export default function TrendsPage() {
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* LinkedIn */}
                         <div className="bg-card p-6 rounded-xl border border-border">
-                            <h3 className="text-lg font-bold mb-4">3️⃣ LinkedIn Economic Graph</h3>
+                            <h3 className="text-lg font-bold mb-4">3️⃣ The "Full-Stack" Renaissance</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Most Demanded Skills (India)</p>
+                                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Required Stack</p>
                                     <div className="flex flex-wrap gap-2">
-                                        {['Java', 'SQL', 'Python', 'System Design', 'Cloud'].map(s => (
+                                        {['Next.js', 'Supabase', 'Vector DBs', 'Python', 'FastAPI'].map(s => (
                                             <span key={s} className="px-2 py-1 bg-muted rounded text-xs text-foreground border border-border">{s}</span>
                                         ))}
                                     </div>
                                 </div>
-                                <p className="text-sm text-muted-foreground border-l-2 border-blue-500 pl-3">
-                                    “Hiring velocity favors engineers who build scalable systems.”
+                                <p className="text-sm text-muted-foreground border-l-2 border-primary pl-3">
+                                    “Specialization is good, but Generalization wins in the AI era.”
                                 </p>
                             </div>
                         </div>
 
                         {/* GitHub */}
                         <div className="bg-card p-6 rounded-xl border border-border">
-                            <h3 className="text-lg font-bold mb-4">4️⃣ GitHub Octoverse</h3>
+                            <h3 className="text-lg font-bold mb-4">4️⃣ Languages of 2025</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Fastest Growing</p>
+                                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Winners</p>
                                     <div className="flex flex-wrap gap-2">
-                                        {['Rust', 'Go', 'TypeScript'].map(s => (
+                                        {['Python (AI)', 'TypeScript (App)', 'Rust (Systems)'].map(s => (
                                             <span key={s} className="px-2 py-1 bg-orange-500/10 text-orange-600 rounded text-xs border border-orange-500/20">{s}</span>
                                         ))}
                                     </div>
                                 </div>
                                 <p className="text-sm font-medium">
-                                    AI-assisted coding is now standard.
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    ℹ️ GitHub profile strength &gt; Resume buzzwords
+                                    Mojo and Go also seeing heavy adoption for infrastructure.
                                 </p>
                             </div>
                         </div>
@@ -217,22 +205,22 @@ export default function TrendsPage() {
 
                 {/* Student Takeaways */}
                 <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8 mb-12">
-                    <h2 className="text-2xl font-heading font-bold mb-6 text-foreground text-center">What This Means for Students</h2>
+                    <h2 className="text-2xl font-heading font-bold mb-6 text-foreground text-center">Action Plan for Students</h2>
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="text-center p-4">
-                            <div className="text-3xl mb-2">🧱</div>
-                            <h3 className="font-bold text-lg mb-2">Fundamentals &gt; Frameworks</h3>
-                            <p className="text-sm text-muted-foreground">Don't just learn React; understand how the DOM works.</p>
+                            <div className="text-3xl mb-2">🤖</div>
+                            <h3 className="font-bold text-lg mb-2">Learn to Orchestrate</h3>
+                            <p className="text-sm text-muted-foreground">Don't just chat with LLMs. Build workflows with them using LangChain or Vercel AI SDK.</p>
                         </div>
                         <div className="text-center p-4">
-                            <div className="text-3xl mb-2">🛠️</div>
-                            <h3 className="font-bold text-lg mb-2">Projects &gt; CGPA</h3>
-                            <p className="text-sm text-muted-foreground">Build real things. Deploy them. Broken code on GitHub is better than no code.</p>
+                            <div className="text-3xl mb-2">🚀</div>
+                            <h3 className="font-bold text-lg mb-2">Ship, Don't just Code</h3>
+                            <p className="text-sm text-muted-foreground">Recruiters want to see deployed URLs, not just GitHub repos. Vercel/Railway is your friend.</p>
                         </div>
                         <div className="text-center p-4">
-                            <div className="text-3xl mb-2">🧠</div>
-                            <h3 className="font-bold text-lg mb-2">Systems &gt; Tools</h3>
-                            <p className="text-sm text-muted-foreground">Tools change every year. Systems thinking lasts forever.</p>
+                            <div className="text-3xl mb-2">🤝</div>
+                            <h3 className="font-bold text-lg mb-2">Soft Skills are Hard Skills</h3>
+                            <p className="text-sm text-muted-foreground">In an AI world, your ability to articulate problems and manage expectations is your moat.</p>
                         </div>
                     </div>
                 </div>
@@ -307,33 +295,7 @@ export default function TrendsPage() {
                             ))}
                         </div>
                     </div>
-                    <p className="text-center text-xs text-muted-foreground mt-12">
-                        Data sourced from <a href="https://www.levels.fyi" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Levels.fyi</a>, industry reports, and community contributions
-                    </p>
                 </div>
-
-                {/* Keyframes for animations */}
-                <style jsx>{`
-                    @keyframes fadeInUp {
-                        from {
-                            opacity: 0;
-                            transform: translateY(20px);
-                        }
-                        to {
-                            opacity: 1;
-                            transform: translateY(0);
-                        }
-                    }
-                    
-                    @keyframes float {
-                        0%, 100% {
-                            transform: translateY(0px);
-                        }
-                        50% {
-                            transform: translateY(-8px);
-                        }
-                    }
-                `}</style>
             </div>
         </div>
     );

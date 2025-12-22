@@ -88,10 +88,10 @@ const CS_TIER1: Company[] = [
         salary: { minLPA: 32, maxLPA: 60, inHandPercent: 70 },
         culture: { wlb: 'Green', learning: 'High' },
         description: 'Search, cloud and ads. Top-tier pay and benefits.',
-        whyJoin: ['Best WLB in Big Tech', 'World-class engineering', 'Market-leading compensation (s. Levels.fyi)', 'High pay'],
+        whyJoin: ['Building Gemini & AI First Future', 'World-class engineering', 'Market-leading compensation (s. Levels.fyi)', 'High pay'],
         detailedAnalysis: {
             pros: [
-                "**Engineering Heaven**: Access to internal tools (Borg, Blaze) that are years ahead.",
+                "**Engineering Heaven**: Access to internal tools (Borg, Blaze) and Gemini 1.5 Pro models.",
                 "**Top Market Pay**: Levels.fyi data indicates L3 (Entry) starts ~₹35LPA TC.",
                 "**Perks**: Free food, fertility assistance, and top-tier health insurance.",
                 "**Internal Mobility**: Easy to switch teams after 18 months."
@@ -104,6 +104,7 @@ const CS_TIER1: Company[] = [
             recentDevelopments: [
                 "**Gemini Era**: Massive internal Pivot to AI. Almost every team is integrating LLMs. Great time to join if you want GenAI experience.",
                 "**Layoffs & Efficiency**: 2024 saw silent layoffs and role eliminations. 'Resting and vesting' is dead.",
+                "**AI Dominance**: Working on Copilot stack and Azure OpenAI Service is a resume goldmine.",
                 "**Office Policy**: Strict 3 days/week in office mandate is being enforced via badge tracking."
             ],
             highlight: "Google is no longer the 'retirement home' for engineers. It's in wartime mode to fight OpenAI/Microsoft. Expect harder work but cutting-edge AI exposure."
@@ -123,7 +124,7 @@ const CS_TIER1: Company[] = [
         salary: { minLPA: 26, maxLPA: 55, inHandPercent: 72 },
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Cloud, backend & systems. High scale engineering.',
-        whyJoin: ['AWS is industry standard', 'High scale systems', 'Good pay', 'Fast growth'],
+        whyJoin: ['Bar Raiser Culture', 'Fast Promotion Velocity', 'Working on AWS Bedrock / Q'],
     },
     {
         id: 'microsoft',
@@ -139,7 +140,7 @@ const CS_TIER1: Company[] = [
         salary: { minLPA: 22, maxLPA: 50, inHandPercent: 74 },
         culture: { wlb: 'Green', learning: 'High' },
         description: 'Enterprise software, cloud and AI.',
-        whyJoin: ['Best WLB among FAANG', 'Azure growing fast', 'Great for families', 'Stable career'],
+        whyJoin: ['Leading the AI Revolution (OpenAI)', 'Great WLB for Tier 1', 'ESOPs are liquid like cash'],
     },
     {
         id: 'apple',
@@ -1275,7 +1276,7 @@ const CORE_TIER2: Company[] = [
         salary: { minLPA: 8, maxLPA: 20, inHandPercent: 70 },
         culture: { wlb: 'Yellow', learning: 'Medium' },
         description: 'JLR parent with EV push.',
-        whyJoin: ['EV Revolution', 'Automotive Legacy', 'Tata Brand'],
+        whyJoin: ['Bar Raiser Culture', 'Fast Promotion Velocity', 'Working on AWS Bedrock / Q'],
         levels: ['GET']
     },
     {
