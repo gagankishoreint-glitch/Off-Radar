@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useCurrencyStore } from '@/store/use-currency-store';
 import { CURRENCIES, CurrencyCode } from '@/lib/currency';
+import { getRolesForCompany, getInternRolesForCompany } from '@/lib/role-utils';
 
 const DEFAULT_OFFER: Partial<Offer> = {
     company: '',
@@ -89,12 +90,37 @@ const OfferInputCard = ({
                     </div>
                     <div>
                         <label className="text-xs text-muted-foreground mb-1 block">Role / Level</label>
-                        <input
-                            className="w-full p-2.5 bg-secondary/50 rounded-md border border-input text-sm"
-                            placeholder="e.g. SDE-1"
-                            value={offer.role || ''}
-                            onChange={e => setOffer({ ...offer, role: e.target.value })}
-                        />
+                        {(() => {
+                            const selectedCompany = COMPANIES.find(c => c.name.toLowerCase() === offer.company?.toLowerCase());
+                            const availableRoles = selectedCompany ? getRolesForCompany(selectedCompany) : [];
+
+                            if (!offer.company || availableRoles.length === 0) {
+                                return (
+                                    <input
+                                        className="w-full p-2.5 bg-secondary/50 rounded-md border border-input text-sm"
+                                        placeholder={offer.company ? "e.g. SDE-1" : "Select company first"}
+                                        value={offer.role || ''}
+                                        onChange={e => setOffer({ ...offer, role: e.target.value })}
+                                        disabled={!offer.company}
+                                    />
+                                );
+                            }
+
+                            return (
+                                <select
+                                    className="w-full p-2.5 bg-secondary/50 rounded-md border border-input text-sm cursor-pointer"
+                                    value={offer.role || ''}
+                                    onChange={e => setOffer({ ...offer, role: e.target.value })}
+                                >
+                                    <option value="">Select Role</option>
+                                    {availableRoles.map(r => (
+                                        <option key={r.role} value={r.role}>
+                                            {r.role} ({r.level})
+                                        </option>
+                                    ))}
+                                </select>
+                            );
+                        })()}
                     </div>
                 </div>
 

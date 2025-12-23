@@ -55,6 +55,8 @@ export interface Company {
         duration?: string;
     };
     careersUrl?: string; // e.g. "https://careers.google.com/jobs"
+    availableRoles?: { role: string; level: string; }[]; // Full-time roles offered
+    internshipRoles?: string[]; // Internship role titles
 }
 
 export const TIER_TOOLTIPS: Record<Tier, string> = {
@@ -110,7 +112,15 @@ const CS_TIER1: Company[] = [
             ],
             highlight: "Google is no longer the 'retirement home' for engineers. It's in wartime mode to fight OpenAI/Microsoft. Expect harder work but cutting-edge AI exposure."
         },
-        careersUrl: 'https://www.google.com/about/careers/applications/jobs/results/?location=India'
+        careersUrl: 'https://www.google.com/about/careers/applications/jobs/results/?location=India',
+        availableRoles: [
+            { role: "L3 - Software Engineer", level: "Entry" },
+            { role: "L4 - Software Engineer II", level: "Mid" },
+            { role: "L5 - Senior Software Engineer", level: "Senior" },
+            { role: "L6 - Staff Software Engineer", level: "Staff" },
+            { role: "L7+ - Senior Staff+", level: "Senior Staff" }
+        ],
+        internshipRoles: ["Software Engineering Intern", "STEP Intern", "Research Intern", "Product Management Intern"]
     },
     {
         id: 'amazon',
@@ -127,7 +137,15 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Cloud, backend & systems. High scale engineering.',
         whyJoin: ['Bar Raiser Culture', 'Fast Promotion Velocity', 'Working on AWS Bedrock / Q'],
-        careersUrl: 'https://www.amazon.jobs/en/locations/india'
+        careersUrl: 'https://www.amazon.jobs/en/locations/india',
+        availableRoles: [
+            { role: "SDE-1", level: "Entry" },
+            { role: "SDE-2", level: "Mid" },
+            { role: "SDE-3", level: "Senior" },
+            { role: "Principal SDE", level: "Principal" },
+            { role: "Senior Principal SDE", level: "Senior Principal" }
+        ],
+        internshipRoles: ["SDE Intern", "Applied Science Intern", "Software Development Engineer Intern"]
     },
     {
         id: 'microsoft',
@@ -144,7 +162,16 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Green', learning: 'High' },
         description: 'Enterprise software, cloud and AI.',
         whyJoin: ['Leading the AI Revolution (OpenAI)', 'Great WLB for Tier 1', 'ESOPs are liquid like cash'],
-        careersUrl: 'https://jobs.careers.microsoft.com/global/en/search?q=India'
+        careersUrl: 'https://jobs.careers.microsoft.com/global/en/search?q=India',
+        availableRoles: [
+            { role: "Software Engineer (59)", level: "Entry" },
+            { role: "Software Engineer II (60)", level: "Entry+" },
+            { role: "Senior SWE (61)", level: "Mid" },
+            { role: "Senior SWE (62)", level: "Senior" },
+            { role: "Principal SWE (63)", level: "Principal" },
+            { role: "Partner (64+)", level: "Partner" }
+        ],
+        internshipRoles: ["Software Engineering Intern", "Explore Intern", "PM Intern"]
     },
     {
         id: 'apple',
@@ -161,7 +188,14 @@ const CS_TIER1: Company[] = [
         culture: { wlb: 'Yellow', learning: 'High' },
         description: 'Consumer OS, silicon and systems teams.',
         whyJoin: ['Premium brand', 'Hardware-software integration', 'Top pay', 'Secretive but rewarding'],
-        careersUrl: 'https://www.apple.com/careers/in/'
+        careersUrl: 'https://www.apple.com/careers/in/',
+        availableRoles: [
+            { role: "ICT2 - Software Engineer", level: "Entry" },
+            { role: "ICT3 - Software Engineer", level: "Mid" },
+            { role: "ICT4 - Senior Software Engineer", level: "Senior" },
+            { role: "ICT5 - Staff Engineer", level: "Staff" }
+        ],
+        internshipRoles: ["Software Engineering Intern"]
     },
     {
         id: 'meta',
