@@ -1,11 +1,11 @@
-# Off-Radar 🌌
+# Off-Radar
 A clean, block-based workspace with real-world career context for students.
 
 Live: https://off-radar.vercel.app/
 
 ---
 
-## 🚨 Problem Statement — The Hidden Cost of Career Decisions
+##  Problem Statement — The Hidden Cost of Career Decisions:
 
 Every year, students accept internships and job offers based on CTC numbers, brand names, or peer pressure — without reliable insight into what those roles actually involve in day-to-day reality.
 
@@ -31,7 +31,7 @@ There is no unified system that helps students compare opportunities using **rea
 
 
 
-## ✨ Features
+##  Features:
 
 - **Block-based Editor**  
   Text, headings, lists, tasks, and code blocks
@@ -50,7 +50,7 @@ There is no unified system that helps students compare opportunities using **rea
 
 
 
-## 🛠 Tech Stack
+## Tech Stack:
 
 - **Next.js 14 (App Router)**
 - **Tailwind CSS**
@@ -59,7 +59,7 @@ There is no unified system that helps students compare opportunities using **rea
 
 
 
-##  Local Development
+##  Local Development:
 
 ```bash
 git clone https://github.com/your-username/off-radar.git
