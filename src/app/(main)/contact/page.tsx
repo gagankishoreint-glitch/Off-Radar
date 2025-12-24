@@ -4,13 +4,28 @@ import { Mail, MessageSquare, Send, Github, Linkedin, ExternalLink } from "lucid
 import Link from "next/link";
 
 export default function ContactPage() {
-    const teamLeader = {
-        name: "Gagan Kishore B",
-        role: "Leader",
-        email: "gagankishoreint@gmail.com",
-        linkedin: "https://www.linkedin.com/in/gagankishore",
-        github: "https://github.com/gagankishoreint-glitch"
-    };
+    const teamMembers = [
+        {
+            name: "Gagan Kishore B",
+            role: "Leader",
+            email: "gagankishoreint@gmail.com",
+            linkedin: "https://www.linkedin.com/in/gagankishore",
+            github: "https://github.com/gagankishoreint-glitch",
+            avatar: "GB"
+        },
+        {
+            name: "Kushal Mohan",
+            role: "Developer",
+            email: "kushalmohan0512@gmail.com",
+            avatar: "KM"
+        },
+        {
+            name: "Dev Parvathareddy",
+            role: "Developer",
+            email: "devparvathareddy@gmail.com",
+            avatar: "DP"
+        }
+    ];
 
     return (
         <div className="min-h-screen bg-background">
@@ -25,57 +40,57 @@ export default function ContactPage() {
                     </p>
                 </div>
 
-                {/* Team Contact Card */}
+                {/* Team Contact Cards */}
                 <div className="mb-12">
-                    <div className="grid sm:grid-cols-1 gap-6 max-w-2xl mx-auto">
-                        <div className="p-8 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-md transition-all">
-                            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
-                                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                                    <Mail className="w-8 h-8 text-primary" />
-                                </div>
-                                <div className="flex-1 space-y-4">
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {teamMembers.map((member, idx) => (
+                            <div key={idx} className="p-6 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-md transition-all">
+                                <div className="flex flex-col items-center text-center gap-4">
+                                    <div className="w-16 h-16 bg-foreground text-background rounded-full flex items-center justify-center font-heading font-bold text-xl">
+                                        {member.avatar}
+                                    </div>
                                     <div>
-                                        <h3 className="text-2xl font-heading font-bold text-foreground">
-                                            {teamLeader.name}
+                                        <h3 className="text-xl font-heading font-bold text-foreground mb-1">
+                                            {member.name}
                                         </h3>
-                                        <p className="text-primary font-medium">
-                                            {teamLeader.role}
+                                        <p className="text-primary font-medium text-sm mb-3">
+                                            {member.role}
                                         </p>
                                     </div>
 
-                                    <div className="flex flex-col gap-2">
-                                        <a
-                                            href={`mailto:${teamLeader.email}`}
-                                            className="inline-flex items-center justify-center md:justify-start gap-2 text-muted-foreground hover:text-primary transition-colors font-medium bg-muted/50 px-4 py-2 rounded-lg"
-                                        >
-                                            <Send className="w-4 h-4" />
-                                            {teamLeader.email}
-                                        </a>
+                                    <a
+                                        href={`mailto:${member.email}`}
+                                        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors font-medium bg-muted/50 px-4 py-2 rounded-lg w-full justify-center"
+                                    >
+                                        <Send className="w-4 h-4" />
+                                        {member.email}
+                                    </a>
 
-                                        <div className="flex justify-center md:justify-start items-center gap-3 mt-2">
+                                    {member.linkedin && member.github && (
+                                        <div className="flex items-center gap-2 mt-2">
                                             <a
-                                                href={teamLeader.linkedin}
+                                                href={member.linkedin}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-[#0077b5]/10 text-[#0077b5] dark:text-[#0077b5] rounded-lg hover:bg-[#0077b5]/20 transition-colors font-semibold"
+                                                className="inline-flex items-center gap-2 text-xs px-3 py-2 bg-[#0077b5]/10 text-[#0077b5] rounded-lg hover:bg-[#0077b5]/20 transition-colors font-semibold"
                                             >
                                                 <Linkedin className="w-4 h-4" />
                                                 LinkedIn
                                             </a>
                                             <a
-                                                href={teamLeader.github}
+                                                href={member.github}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors font-semibold"
+                                                className="inline-flex items-center gap-2 text-xs px-3 py-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors font-semibold"
                                             >
                                                 <Github className="w-4 h-4" />
                                                 GitHub
                                             </a>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
 

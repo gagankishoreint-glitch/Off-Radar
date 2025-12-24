@@ -6,7 +6,6 @@ import Link from "next/link";
 export default function AboutPage() {
     const teamMembers = [
         { name: "Gagan Kishore B", role: "Leader", email: "gagankishoreint@gmail.com", avatar: "GB" },
-        { name: "Shivani Kumari", role: "Developer", email: "shivaniikumari20@gmail.com", avatar: "SK" },
         { name: "Kushal Mohan", role: "Developer", email: "kushalmohan0512@gmail.com", avatar: "KM" },
         { name: "Dev Parvathareddy", role: "Developer", email: "devparvathareddy@gmail.com", avatar: "DP" }
     ];
