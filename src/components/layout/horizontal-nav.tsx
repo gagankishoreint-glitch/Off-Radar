@@ -24,32 +24,31 @@ export function HorizontalNav() {
     };
 
     const navLinks = [
-        { href: "/companies", label: "Companies" },
-        { href: "/trends", label: "Trends" },
-        { href: "/calculator", label: "Calculator" },
-        { href: "/resume", label: "Resume" },
-        { href: "/compare", label: "Compare" },
+        { href: "/companies", label: "Explore Companies" },
+        { href: "/trends", label: "Market Trends" },
+        { href: "/calculator", label: "CTC Calculator" },
+        { href: "/compare", label: "Compare Offers" },
         { href: "/about", label: "About" },
         ...(isLoggedIn ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     ];
 
     return (
         <header className="sticky top-0 z-50 w-full bg-background border-b border-border">
-            <div className="container mx-auto px-4 lg:px-8">
-                <div className="flex h-16 items-center justify-between gap-4">
+            <div className="container mx-auto px-3 lg:px-6 max-w-[1400px]">
+                <div className="flex h-16 items-center justify-between gap-3">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
-                        <span className="font-heading font-bold text-xl lg:text-2xl tracking-tight">Off-Radar</span>
+                        <span className="font-heading font-bold text-lg lg:text-xl tracking-tight">Off-Radar</span>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center">
+                    <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center max-w-4xl">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 className={cn(
-                                    "px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap",
+                                    "px-2.5 py-2 text-xs font-medium rounded-md transition-colors whitespace-nowrap",
                                     pathname === link.href || pathname?.startsWith(link.href)
                                         ? "text-foreground bg-muted"
                                         : "text-muted-foreground hover:text-foreground hover:bg-muted"
