@@ -2,10 +2,10 @@ export type CurrencyCode = 'INR' | 'USD' | 'EUR' | 'GBP' | 'SGD';
 
 export const CURRENCIES: Record<CurrencyCode, { symbol: string; rate: number; label: string }> = {
     INR: { symbol: '₹', rate: 1, label: 'INR (₹)' },
-    USD: { symbol: '$', rate: 0.012, label: 'USD ($)' }, // 1 INR = ~0.012 USD
-    EUR: { symbol: '€', rate: 0.011, label: 'EUR (€)' }, // 1 INR = ~0.011 EUR
-    GBP: { symbol: '£', rate: 0.0095, label: 'GBP (£)' }, // 1 INR = ~0.0095 GBP
-    SGD: { symbol: 'S$', rate: 0.016, label: 'SGD (S$)' }, // 1 INR = ~0.016 SGD
+    USD: { symbol: '$', rate: 0.01174, label: 'USD ($)' }, // 1 INR = ~0.01174 USD (1 USD = 85.18 INR - Dec 24, 2024)
+    EUR: { symbol: '€', rate: 0.01129, label: 'EUR (€)' }, // 1 INR = ~0.01129 EUR (1 EUR = 88.56 INR - Dec 24, 2024)
+    GBP: { symbol: '£', rate: 0.00936, label: 'GBP (£)' }, // 1 INR = ~0.00936 GBP (1 GBP = 106.84 INR - Dec 24, 2024)
+    SGD: { symbol: 'S$', rate: 0.016, label: 'SGD (S$)' }, // 1 INR = ~0.016 SGD (1 SGD = 62.5 INR - Dec 24, 2024)
 };
 
 /**
