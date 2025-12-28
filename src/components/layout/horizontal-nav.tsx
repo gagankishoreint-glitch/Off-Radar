@@ -9,6 +9,7 @@ import { Radar, Sun, Moon, LogOut, User, Menu, X, Coins } from "lucide-react";
 import { useState } from "react";
 import { useCurrencyStore } from "@/store/use-currency-store";
 import { CURRENCIES, CurrencyCode } from "@/lib/currency";
+import Image from "next/image";
 
 export function HorizontalNav() {
     const pathname = usePathname();
@@ -39,6 +40,13 @@ export function HorizontalNav() {
                 <div className="flex h-16 items-center justify-between gap-6">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
+                        <Image
+                            src={theme === 'dark' ? '/logo-white.png' : '/logo-black.png'}
+                            alt="Off-Radar Logo"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8"
+                        />
                         <span className="font-heading font-bold text-xl lg:text-2xl tracking-tight">Off-Radar</span>
                     </Link>
 

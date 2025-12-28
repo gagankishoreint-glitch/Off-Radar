@@ -80,7 +80,7 @@ export default function AboutPage() {
                     <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-12 text-foreground">
                         Meet the Team
                     </h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
                         {teamMembers.map((member, idx) => (
                             <div key={idx} className="flex flex-col items-center text-center p-8 bg-background rounded-xl border border-border hover:shadow-lg transition-shadow">
                                 <div className="w-16 h-16 rounded-full bg-foreground text-background flex items-center justify-center font-heading font-bold text-xl mb-4">
