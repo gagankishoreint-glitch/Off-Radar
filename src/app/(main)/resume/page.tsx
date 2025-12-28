@@ -165,23 +165,55 @@ export default function ResumeScannerPage() {
         if (!file) return;
 
         setIsUploading(true);
-        const formData = new FormData();
-        formData.append('file', file);
 
         try {
-            const res = await fetch('/api/parse-resume', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
-            if (data.text) {
-                setResumeText(data.text);
+            if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                // Client-side PDF parsing using PDF.js
+                const pdfjsLib = await import('pdfjs-dist');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                let fullText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items
+                        .map((item: any) => item.str)
+                        .join(' ');
+                    fullText += pageText + ' ';
+                }
+
+                setResumeText(fullText.trim());
+            } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                // Handle text files
+                const text = await file.text();
+                setResumeText(text);
+            } else if (
+                file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                file.name.endsWith('.docx')
+            ) {
+                // For DOCX, we still need to call the API
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const res = await fetch('/api/parse-resume', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.text) {
+                    setResumeText(data.text);
+                } else {
+                    alert("Could not extract text from DOCX file.");
+                }
             } else {
-                alert("Could not extract text from file.");
+                alert("Unsupported file type. Please upload PDF or TXT files.");
             }
         } catch (error) {
             console.error(error);
-            alert("Failed to upload/parse file.");
+            alert("Failed to parse file. Please try again or paste the text manually.");
         } finally {
             setIsUploading(false);
         }
@@ -338,9 +370,9 @@ export default function ResumeScannerPage() {
                                             <p className="text-sm text-muted-foreground">
                                                 <span className="font-semibold">Click to upload</span> or drag and drop
                                             </p>
-                                            <p className="text-xs text-muted-foreground">PDF, DOCX, TXT</p>
+                                            <p className="text-xs text-muted-foreground">PDF, TXT</p>
                                         </div>
-                                        <input type="file" className="hidden" accept=".pdf,.docx,.txt" onChange={handleFileUpload} />
+                                        <input type="file" className="hidden" accept=".pdf,.txt" onChange={handleFileUpload} />
                                     </label>
                                 </div>
 

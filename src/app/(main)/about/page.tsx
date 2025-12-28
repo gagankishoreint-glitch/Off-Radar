@@ -5,9 +5,10 @@ import Link from "next/link";
 
 export default function AboutPage() {
     const teamMembers = [
-        { name: "Gagan Kishore B", role: "Leader", email: "gagankishoreint@gmail.com", github: "https://github.com/gagankishoreint-glitch", avatar: "GB" },
+        { name: "Gagan Kishore B", role: "Leader", email: "gagankishoreint@gmail.com", github: "https://github.com/gagankishoreint-glitch", linkedin: "https://www.linkedin.com/in/gagankishore", avatar: "GB" },
         { name: "Kushal Mohan", role: "Developer", email: "kushalmohan0512@gmail.com", github: "https://github.com/kushal040511", avatar: "KM" },
-        { name: "Dev Parvathareddy", role: "Developer", email: "devparvathareddy@gmail.com", github: "https://github.com/GokuRoseSSJ", avatar: "DP" }
+        { name: "Dev Parvathareddy", role: "Developer", email: "devparvathareddy@gmail.com", github: "https://github.com/GokuRoseSSJ", avatar: "DP" },
+        { name: "Parth Singh Mahra", role: "Developer", email: "parth@offradar.dev", github: "https://github.com/parthsinghmahra", linkedin: "https://www.linkedin.com/in/parth-singh-mahra-99a990393", avatar: "PM" }
     ];
 
     return (

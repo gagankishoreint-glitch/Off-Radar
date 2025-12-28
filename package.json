@@ -23,6 +23,7 @@
     "nanoid": "^5.0.4",
     "next": "^16.1.0",
     "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^5.4.449",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.2.1",
