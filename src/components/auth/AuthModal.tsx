@@ -4,6 +4,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { X, Mail, Lock, User as UserIcon, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
@@ -15,6 +16,7 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
+    const router = useRouter();
     const { signInWithGoogle, signInWithEmail, signUpWithEmail, isConfigured } = useAuth();
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>(defaultTab);
     const [email, setEmail] = useState('');
@@ -36,6 +38,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Aut
         try {
             await signInWithGoogle();
             onClose();
+            router.push('/companies');
         } catch (err: any) {
             setError(err.message || 'Google sign-in failed');
         } finally {
@@ -66,6 +69,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Aut
                 await signUpWithEmail(email, password);
             }
             onClose();
+            router.push('/companies');
         } catch (err: any) {
             setError(err.message || `${activeTab === 'login' ? 'Sign in' : 'Sign up'} failed`);
         } finally {
@@ -104,8 +108,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Aut
                             setError('');
                         }}
                         className={`pb-3 px-4 text-sm font-medium transition-colors relative ${activeTab === 'login'
-                                ? 'text-white'
-                                : 'text-white/40 hover:text-white/60'
+                            ? 'text-white'
+                            : 'text-white/40 hover:text-white/60'
                             }`}
                     >
                         Login
@@ -119,8 +123,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = 'login' }: Aut
                             setError('');
                         }}
                         className={`pb-3 px-4 text-sm font-medium transition-colors relative ${activeTab === 'signup'
-                                ? 'text-white'
-                                : 'text-white/40 hover:text-white/60'
+                            ? 'text-white'
+                            : 'text-white/40 hover:text-white/60'
                             }`}
                     >
                         Sign Up
