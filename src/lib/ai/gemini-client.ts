@@ -1,7 +1,9 @@
-// Vertex AI Gemini Client Wrapper
+// Vertex AI Gemini Client Wrapper - WITH DEMO MODE
 // Provides easy-to-use methods for AI operations with error handling
+// Falls back to demo mode when not configured for full functionality
 
 import { VertexAI } from '@google-cloud/vertexai';
+import { demoAIClient } from './demo-ai-client';
 
 interface GeminiConfig {
     projectId: string;
@@ -27,13 +29,13 @@ class GeminiClient {
                     project: projectId,
                     location: location,
                 });
-                console.log('[Gemini] Client initialized successfully');
+                console.log('[Gemini] Client initialized successfully - Real AI Mode');
             } catch (error) {
                 console.error('[Gemini] Initialization failed:', error);
                 this.isConfigured = false;
             }
         } else {
-            console.warn('[Gemini] Configuration missing. AI features will be disabled.');
+            console.warn('[Gemini] Configuration missing - Using Demo AI Mode for full functionality');
         }
     }
 
@@ -41,8 +43,10 @@ class GeminiClient {
      * Generate text from a prompt
      */
     async generateText(prompt: string, options?: { temperature?: number; maxTokens?: number }): Promise<string> {
+        // DEMO MODE: Use mock AI when not configured
         if (!this.isConfigured || !this.vertexAI) {
-            throw new Error('Gemini client not configured. Please set GCP_PROJECT_ID and GCP_LOCATION.');
+            console.log('[Gemini] Using demo AI mode');
+            return demoAIClient.chat(prompt);
         }
 
         try {
@@ -67,6 +71,15 @@ class GeminiClient {
      * Analyze a document (resume, job description, etc.)
      */
     async analyzeDocument(text: string, analysisType: 'resume' | 'job_description' | 'offer'): Promise<any> {
+        // DEMO MODE: Use mock analysis
+        if (!this.isConfigured || !this.vertexAI) {
+            console.log('[Gemini] Using demo mode for document analysis');
+            if (analysisType === 'resume') {
+                return demoAIClient.analyzeResume(text);
+            }
+            return { error: 'Demo mode only supports resume analysis', demo: true };
+        }
+
         const prompts = {
             resume: `You are an expert resume analyzer and career coach. Analyze the following resume and extract:
 1. Skills (categorize as proficient/familiar)
@@ -120,9 +133,12 @@ Respond in JSON format with salary breakdown, pros/cons, and recommendations.`
     /**
      * Chat completion for conversational AI
      */
-    async chat(messages: Array<{ role: 'user' | 'assistant'; content: string }>, systemPrompt?: string): Promise<string> {
+    async chat(messages: Array<{ role: 'user' | 'assistant'; content: string }>, systemPrompt?: string, context?: any): Promise<string> {
+        // DEMO MODE: Use mock chat
         if (!this.isConfigured || !this.vertexAI) {
-            throw new Error('Gemini client not configured');
+            console.log('[Gemini] Using demo mode for chat');
+            const lastMessage = messages[messages.length - 1];
+            return demoAIClient.chat(lastMessage.content, context);
         }
 
         // Combine system prompt and conversation history
@@ -138,6 +154,12 @@ Respond in JSON format with salary breakdown, pros/cons, and recommendations.`
      * Compare two offers and provide recommendation
      */
     async compareOffers(offer1: any, offer2: any, userPreferences: any): Promise<any> {
+        // DEMO MODE: Use mock comparison
+        if (!this.isConfigured || !this.vertexAI) {
+            console.log('[Gemini] Using demo mode for offer comparison');
+            return demoAIClient.compareOffers(offer1, offer2);
+        }
+
         const prompt = `You are a career advisor. Compare these two job offers and provide a detailed recommendation considering the user's preferences.
 
 Offer 1:
@@ -184,10 +206,17 @@ Respond in JSON format:
     }
 
     /**
-     * Check if client is properly configured
+     * Check if client is properly configured (real AI mode)
      */
     get configured(): boolean {
         return this.isConfigured;
+    }
+
+    /**
+     * Check if using demo mode
+     */
+    get isDemoMode(): boolean {
+        return !this.isConfigured;
     }
 }
 
